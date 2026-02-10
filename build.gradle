@@ -98,6 +98,11 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
+    //Java 25 source compatibility
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	// if it is present.
 	// If you remove this line, sources will not be generated.

@@ -1,4 +1,4 @@
-package me.alexyzer.casting;
+package me.alexyzer.hexcc.casting;
 
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.addldata.ADMediaHolder;

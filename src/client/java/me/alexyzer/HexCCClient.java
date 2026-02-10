@@ -2,7 +2,7 @@ package me.alexyzer;
 
 import dan200.computercraft.api.client.FabricComputerCraftAPIClient;
 import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
-import me.alexyzer.computer.StaffTurtleUpgrade;
+import me.alexyzer.hexcc.computer.upgrade.StaffTurtleUpgrade;
 import net.fabricmc.api.ClientModInitializer;
 
 public class HexCCClient implements ClientModInitializer {

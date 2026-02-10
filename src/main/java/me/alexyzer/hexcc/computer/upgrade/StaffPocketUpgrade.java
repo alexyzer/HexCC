@@ -1,4 +1,4 @@
-package me.alexyzer.computer;
+package me.alexyzer.hexcc.computer.upgrade;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.AbstractPocketUpgrade;
@@ -17,6 +17,7 @@ public class StaffPocketUpgrade extends AbstractPocketUpgrade{
     }
     @Override public IPeripheral createPeripheral(IPocketAccess pocketAccess) {
         //When assembling peripheral
-        return new StaffPeripheral(pocketAccess);
+        //return new StaffPocketPeripheral(pocketAccess);
+        return null;
     }
 }

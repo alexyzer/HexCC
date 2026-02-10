@@ -1,11 +1,11 @@
 package me.alexyzer;
 
+import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.pocket.PocketUpgradeSerialiser;
 import dan200.computercraft.api.turtle.TurtleUpgradeSerialiser;
-import me.alexyzer.computer.StaffPocketUpgrade;
-import me.alexyzer.computer.StaffTurtleUpgrade;
+import me.alexyzer.hexcc.computer.upgrade.StaffPocketUpgrade;
+import me.alexyzer.hexcc.computer.upgrade.StaffTurtleUpgrade;
 import net.fabricmc.api.ModInitializer;
-
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -21,13 +21,14 @@ public class HexCC implements ModInitializer {
         ModItems.initialize();
         Registry.register(
                 (Registry<TurtleUpgradeSerialiser<?>>) BuiltInRegistries.REGISTRY.get(TurtleUpgradeSerialiser.registryId().location()),
-                new ResourceLocation(MOD_ID, "staff"),
+                new ResourceLocation(HexCC.MOD_ID, "staff"),
                 StaffTurtleUpgrade.SERIALIZER
         );
         Registry.register(
                 (Registry<PocketUpgradeSerialiser<?>>) BuiltInRegistries.REGISTRY.get(PocketUpgradeSerialiser.registryId().location()),
-                new ResourceLocation(MOD_ID, "staff"),
+                new ResourceLocation(HexCC.MOD_ID, "staff"),
                 StaffPocketUpgrade.SERIALIZER
         );
-	}
+        ComputerCraftAPI.registerAPIFactory(HexCCLuaAPI::new);
+    }
 }

@@ -1,4 +1,4 @@
-package me.alexyzer.casting;
+package me.alexyzer.hexcc.casting;
 
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
 import net.minecraft.world.phys.Vec3;

@@ -5,12 +5,12 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.turtle.*;
 import me.alexyzer.hexcc.computer.peripheral.StaffPeripheral;
 import me.alexyzer.hexcc.computer.peripheral.StaffTurtlePeripheral;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 
 public class StaffTurtleUpgrade extends AbstractTurtleUpgrade {
     public static final TurtleUpgradeSerialiser<StaffTurtleUpgrade> SERIALIZER = TurtleUpgradeSerialiser.simple(StaffTurtleUpgrade::new);
-    protected StaffTurtleUpgrade(ResourceLocation id) {
+    protected StaffTurtleUpgrade(Identifier id) {
         //At registering it as an upgrade
         super(id, TurtleUpgradeType.PERIPHERAL,"Casting", new ItemStack(HexItems.STAFF_MINDSPLICE));
     }

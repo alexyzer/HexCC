@@ -6,8 +6,7 @@ import at.petrak.hexcasting.api.casting.iota.IotaType;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
 import dan200.computercraft.api.lua.*;
 import me.alexyzer.hexcc.computer.ComputerUtil;
-import net.minecraft.core.Registry;
-
+import net.minecraft.registry.Registry;
 import java.util.*;
 
 public record NativeLuaIota(Iota iota) implements IDynamicLuaObject {
@@ -16,7 +15,7 @@ public record NativeLuaIota(Iota iota) implements IDynamicLuaObject {
     @LuaFunction public String type() {return iota.getType().typeName().getString();}
     @LuaFunction public String id() {
         return Objects.requireNonNull(
-                IOTA_TYPES.getKey(iota.getType()), "Failed to get registry name for " + iota.getType()).toString();
+                IOTA_TYPES.getId(iota.getType()), "Failed to get registry name for " + iota.getType()).toString();
     }
     @LuaFunction public Object data() {return ComputerUtil.tagToLua(iota.serialize());}
 

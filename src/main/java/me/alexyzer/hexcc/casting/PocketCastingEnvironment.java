@@ -5,9 +5,9 @@ import at.petrak.hexcasting.api.casting.eval.env.StaffCastEnv;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import me.alexyzer.hexcc.casting.ResponseWrapper.CastResponseWrapper;
 import me.alexyzer.hexcc.casting.ResponseWrapper.WithResponseWrapper;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 
 public class PocketCastingEnvironment extends StaffCastEnv implements WithResponseWrapper {
     public final CastResponseWrapper wrapper = new CastResponseWrapper();
@@ -16,10 +16,12 @@ public class PocketCastingEnvironment extends StaffCastEnv implements WithRespon
         super.postExecution(result);
         wrapper.wrapPostExecution(result,this,this.mishapSprayPos());
     }
-    @Override public void printMessage(Component message) {
+    @Override public void printMessage(Text message) {
         super.printMessage(message);
         wrapper.wrapPrintMessage(message);
     }
 
-    public PocketCastingEnvironment(IPocketAccess pocketAccess) {super((ServerPlayer) pocketAccess.getEntity(), InteractionHand.MAIN_HAND);}
+    public PocketCastingEnvironment(IPocketAccess pocketAccess) {
+        super(((ServerPlayerEntity) pocketAccess.getEntity()), Hand.MAIN_HAND);
+    }
 }

@@ -14,7 +14,7 @@ import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import me.alexyzer.NativeLuaIota;
 import me.alexyzer.hexcc.casting.ResponseWrapper.WithResponseWrapper;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class StaffPeripheral implements IPeripheral {
-    public CompoundTag upgradeData;
+    public NbtCompound upgradeData;
     public CastingVM castingVM;
     public boolean needsUpdate = true;
 
-    protected StaffPeripheral(CastingEnvironment env, CompoundTag upgradeData){
+    protected StaffPeripheral(CastingEnvironment env, NbtCompound upgradeData){
         this.upgradeData = upgradeData;
         castingVM = new CastingVM(CastingImage.loadFromNbt(upgradeData, env.getWorld()), env);
     };

@@ -3,13 +3,13 @@ package me.alexyzer.hexcc.casting.ResponseWrapper;
 import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 
 ///Holds the methods for capturing reveal and mishaps
 public class CastResponseWrapper {
@@ -26,11 +26,11 @@ public class CastResponseWrapper {
         lastMishap = null;
         return output;
     }
-    public void wrapPrintMessage(Component message) {revealBuffer.add(message.getString());}
-    public void wrapPostExecution(CastResult result, CastingEnvironment env, Vec3 soundPos) {
+    public void wrapPrintMessage(Text message) {revealBuffer.add(message.getString());}
+    public void wrapPostExecution(CastResult result, CastingEnvironment env, Vec3d soundPos) {
         var sound = result.getSound().sound();
         if (sound != null) {
-            env.getWorld().playSound(null,soundPos.x,soundPos.y,soundPos.z,sound, SoundSource.BLOCKS,1,1);
+            env.getWorld().playSound(null,soundPos.x,soundPos.y,soundPos.z,sound, SoundCategory.BLOCKS,1,1);
         }
         for (var sideEffect : result.getSideEffects()) {
             if (sideEffect instanceof OperatorSideEffect.DoMishap doMishap) {

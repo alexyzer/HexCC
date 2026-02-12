@@ -3,21 +3,20 @@ package me.alexyzer.hexcc.casting;
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.addldata.ADMediaHolder;
 import at.petrak.hexcasting.api.utils.MediaHelper;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.ItemStack;
-
 import java.util.*;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 
 public class HexcastingUtil {
     private static final Comparator<ADMediaHolder> PRIORITY_COMPARATOR =
             (a, b) -> b.getConsumptionPriority() - a.getConsumptionPriority();
 
-    public static List<ADMediaHolder> scanContainerForMediaStuff(Container inventory) {
-        int size = inventory.getContainerSize();
+    public static List<ADMediaHolder> scanContainerForMediaStuff(Inventory inventory) {
+        int size = inventory.size();
         List<ADMediaHolder> holders = new ArrayList<>(Math.min(size, 16));
 
         for (int i = 0; i < size; i++) {
-            ItemStack stack = inventory.getItem(i);
+            ItemStack stack = inventory.getStack(i);
             if (stack.isEmpty()||!MediaHelper.isMediaItem(stack)) continue;
             ADMediaHolder holder = HexAPI.instance().findMediaHolder(stack);
             if (holder.canProvide()) holders.add(holder);

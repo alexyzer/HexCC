@@ -8,19 +8,18 @@ import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleSide;
-import dan200.computercraft.shared.turtle.core.TurtlePlayer;
 import me.alexyzer.hexcc.casting.ResponseWrapper.CastResponseWrapper;
 import me.alexyzer.hexcc.casting.ResponseWrapper.WithResponseWrapper;
 import me.alexyzer.hexcc.computer.FakeTurtlePlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,16 +33,16 @@ public class TurtleCastingEnv extends CastingEnvironment implements WithResponse
         super.postExecution(result);
         wrapper.wrapPostExecution(result,this,this.mishapSprayPos());
     }
-    @Override public void printMessage(Component message) {wrapper.wrapPrintMessage(message);}
-    public final ServerPlayer fakePlayer;
+    @Override public void printMessage(Text message) {wrapper.wrapPrintMessage(message);}
+    public final ServerPlayerEntity fakePlayer;
 
     public final ITurtleAccess turtleAccess;
     public final TurtleSide side;
-    public final TurtleMishapEnvironment mishapEnvironment = new TurtleMishapEnvironment(this);
+    public final me.alexyzer.hexcc.casting.TurtleMishapEnvironment mishapEnvironment = new TurtleMishapEnvironment(this);
     public FrozenPigment pigment = FrozenPigment.DEFAULT.get();
 
     public TurtleCastingEnv(ITurtleAccess turtleAccess, TurtleSide side) {
-        super((ServerLevel) turtleAccess.getLevel());
+        super((ServerWorld) turtleAccess.getLevel());
         this.turtleAccess = turtleAccess; this.side = side;
         fakePlayer = new FakeTurtlePlayer(turtleAccess);
     }
@@ -57,52 +56,52 @@ public class TurtleCastingEnv extends CastingEnvironment implements WithResponse
         }
         return negativeMedia;
     }
-    public Vec3 getDirection(){
-        return Vec3.atLowerCornerOf(turtleAccess.getDirection().getNormal());
+    public Vec3d getDirection(){
+        return Vec3d.of(turtleAccess.getDirection().getVector());
     }
-    public Vec3 getFacePosition(){
-        return getPosition().add(getDirection().scale(.5));
+    public Vec3d getFacePosition(){
+        return getPosition().add(getDirection().multiply(.5));
     }
-    public Vec3 getPosition(){return turtleAccess.getPosition().getCenter();}
+    public Vec3d getPosition(){return turtleAccess.getPosition().toCenterPos();}
     public ItemStack extractItem(int slot){
-        ItemStack extracted = turtleAccess.getInventory().getItem(slot);
-        turtleAccess.getInventory().setItem(slot, ItemStack.EMPTY);
+        ItemStack extracted = turtleAccess.getInventory().getStack(slot);
+        turtleAccess.getInventory().setStack(slot, ItemStack.EMPTY);
         return extracted;
     }
     public ItemStack extractSelectedItem(){
         return extractItem(turtleAccess.getSelectedSlot());
     }
 
-    @Override protected boolean isVecInRangeEnvironment(Vec3 vec) {
-        return turtleAccess.getPosition().getCenter().subtract(vec).lengthSqr()<256; //16 block ambit
+    @Override protected boolean isVecInRangeEnvironment(Vec3d vec) {
+        return turtleAccess.getPosition().toCenterPos().subtract(vec).lengthSquared()<256; //16 block ambit
     }
-    @Override protected boolean hasEditPermissionsAtEnvironment(BlockPos pos) {return this.world.mayInteract(fakePlayer,pos);}
-    @Override public InteractionHand getCastingHand() {
+    @Override protected boolean hasEditPermissionsAtEnvironment(BlockPos pos) {return this.world.canPlayerModifyAt(fakePlayer,pos);}
+    @Override public Hand getCastingHand() {
         return switch (side) {
-            case LEFT -> InteractionHand.OFF_HAND;
-            case RIGHT -> InteractionHand.MAIN_HAND;
+            case LEFT -> Hand.OFF_HAND;
+            case RIGHT -> Hand.MAIN_HAND;
         };
     }
 
     @Override protected List<ItemStack> getUsableStacks(StackDiscoveryMode mode) {
         List<ItemStack> stacks = new ArrayList<>(16);
-        Container inventory = turtleAccess.getInventory();
-        int size = inventory.getContainerSize();
-        for (int n = 0; n<size; n++){stacks.add(inventory.getItem(n));}
+        Inventory inventory = turtleAccess.getInventory();
+        int size = inventory.size();
+        for (int n = 0; n<size; n++){stacks.add(inventory.getStack(n));}
         return stacks;
     }
     @Override public boolean isEnlightened() {return true;}
-    @Override protected List<HeldItemInfo> getPrimaryStacks() {return List.of(new HeldItemInfo(turtleAccess.getInventory().getItem(turtleAccess.getSelectedSlot()), InteractionHand.MAIN_HAND));}
-    @Override public boolean replaceItem(Predicate<ItemStack> stackOk, ItemStack replaceWith, @Nullable InteractionHand hand) {
-        Container inventory = turtleAccess.getInventory();
-        if (stackOk.test(inventory.getItem(turtleAccess.getSelectedSlot()))) {
-            inventory.setItem(turtleAccess.getSelectedSlot(), replaceWith);
+    @Override protected List<HeldItemInfo> getPrimaryStacks() {return List.of(new HeldItemInfo(turtleAccess.getInventory().getStack(turtleAccess.getSelectedSlot()), Hand.MAIN_HAND));}
+    @Override public boolean replaceItem(Predicate<ItemStack> stackOk, ItemStack replaceWith, @Nullable Hand hand) {
+        Inventory inventory = turtleAccess.getInventory();
+        if (stackOk.test(inventory.getStack(turtleAccess.getSelectedSlot()))) {
+            inventory.setStack(turtleAccess.getSelectedSlot(), replaceWith);
             return true;
         }
-        for (int i = inventory.getContainerSize() - 1; i >= 0; i--) {
+        for (int i = inventory.size() - 1; i >= 0; i--) {
             if (i != turtleAccess.getSelectedSlot()) {
-                if (stackOk.test(inventory.getItem(i))) {
-                    inventory.setItem(i, replaceWith);
+                if (stackOk.test(inventory.getStack(i))) {
+                    inventory.setStack(i, replaceWith);
                     return true;
                 }
             }
@@ -115,7 +114,7 @@ public class TurtleCastingEnv extends CastingEnvironment implements WithResponse
         this.pigment = pigment;
         return old;
     }
-    @Override public Vec3 mishapSprayPos() {return getPosition();}
+    @Override public Vec3d mishapSprayPos() {return getPosition();}
     @Override public void produceParticles(ParticleSpray particles, FrozenPigment colorizer) {particles.sprayParticles(this.world, colorizer);}
     @Override public @Nullable LivingEntity getCastingEntity() {return fakePlayer;}
     @Override public MishapEnvironment getMishapEnvironment() {return mishapEnvironment;}

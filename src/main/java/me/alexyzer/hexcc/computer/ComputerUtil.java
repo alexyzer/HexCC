@@ -6,20 +6,20 @@ import net.minecraft.nbt.*;
 import java.util.*;
 
 public class ComputerUtil {
-    public static Object tagToLua(Tag tag){
-        return switch(tag.getId()){
-            case Tag.TAG_BYTE->((ByteTag)tag).getAsByte();
-            case Tag.TAG_SHORT->((ShortTag)tag).getAsShort();
-            case Tag.TAG_INT->((IntTag)tag).getAsInt();
-            case Tag.TAG_LONG->((LongTag)tag).getAsLong();
-            case Tag.TAG_FLOAT->((FloatTag)tag).getAsFloat();
-            case Tag.TAG_DOUBLE->((DoubleTag)tag).getAsDouble();
-            case Tag.TAG_STRING-> tag.getAsString();
-            case Tag.TAG_BYTE_ARRAY-> ((ByteArrayTag)tag).getAsByteArray(); //Let it be a string
-            case Tag.TAG_INT_ARRAY-> Arrays.stream(((IntArrayTag)tag).getAsIntArray()).boxed().toList();
-            case Tag.TAG_LONG_ARRAY-> Arrays.stream(((LongArrayTag)tag).getAsLongArray()).boxed().toList();
-            case Tag.TAG_LIST-> {
-                var list = ((ListTag)tag);
+    public static Object tagToLua(NbtElement tag){
+        return switch(tag.getType()){
+            case NbtElement.BYTE_TYPE->((NbtByte)tag).byteValue();
+            case NbtElement.SHORT_TYPE->((NbtShort)tag).shortValue();
+            case NbtElement.INT_TYPE->((NbtInt)tag).intValue();
+            case NbtElement.LONG_TYPE->((NbtLong)tag).longValue();
+            case NbtElement.FLOAT_TYPE->((NbtFloat)tag).floatValue();
+            case NbtElement.DOUBLE_TYPE->((NbtDouble)tag).doubleValue();
+            case NbtElement.STRING_TYPE-> tag.asString();
+            case NbtElement.BYTE_ARRAY_TYPE-> ((NbtByteArray)tag).getByteArray(); //Let it be a string
+            case NbtElement.INT_ARRAY_TYPE-> Arrays.stream(((NbtIntArray)tag).getIntArray()).boxed().toList();
+            case NbtElement.LONG_ARRAY_TYPE-> Arrays.stream(((NbtLongArray)tag).getLongArray()).boxed().toList();
+            case NbtElement.LIST_TYPE-> {
+                var list = ((NbtList)tag);
                 var size = list.size();
                 List<Object> result = new ArrayList<>(size);
                 for (int i = 0; i < size; i++) {
@@ -27,10 +27,10 @@ public class ComputerUtil {
                 }
                 yield result;
             }
-            case Tag.TAG_COMPOUND-> {
-                var compound = ((CompoundTag)tag);
-                Map<String,Object> result = new LinkedHashMap<>(compound.size());
-                for (String key: compound.getAllKeys()){result.put(key,tagToLua(compound.get(key)));}
+            case NbtElement.COMPOUND_TYPE-> {
+                var compound = ((NbtCompound)tag);
+                Map<String,Object> result = new LinkedHashMap<>(compound.getSize());
+                for (String key: compound.getKeys()){result.put(key,tagToLua(compound.get(key)));}
                 yield result;
             }
             default-> {

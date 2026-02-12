@@ -3,25 +3,23 @@ package me.alexyzer.hexcc.computer;
 import com.mojang.authlib.GameProfile;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.shared.turtle.blocks.TurtleBlockEntity;
-import me.alexyzer.HexCC;
 import net.fabricmc.fabric.impl.event.interaction.FakePlayerNetworkHandler;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stat;
-import net.minecraft.world.Container;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Team;
+import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.command.argument.EntityAnchorArgumentType;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stat;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,15 +28,15 @@ import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.UUID;
 
-public class FakeTurtlePlayer extends ServerPlayer {
+public class FakeTurtlePlayer extends ServerPlayerEntity {
     public final ITurtleAccess turtleAccess;
     public FakeTurtlePlayer(ITurtleAccess turtleAccess) {
-        super(((ServerLevel)turtleAccess.getLevel()).getServer(),(ServerLevel) turtleAccess.getLevel(),makeProfile(getTurtleId(turtleAccess)));
+        super(((ServerWorld)turtleAccess.getLevel()).getServer(),(ServerWorld) turtleAccess.getLevel(),makeProfile(getTurtleId(turtleAccess)));
         this.turtleAccess = turtleAccess;
-        this.connection = new FakePlayerNetworkHandler(this);
-        this.lookAt(EntityAnchorArgument.Anchor.FEET,Vec3.atLowerCornerOf(turtleAccess.getDirection().getNormal()));
-        this.setPos(turtleAccess.getPosition().getCenter());
-        this.setLevel(turtleAccess.getLevel());
+        this.networkHandler = new FakePlayerNetworkHandler(this);
+        this.lookAt(EntityAnchorArgumentType.EntityAnchor.FEET,Vec3d.of(turtleAccess.getDirection().getVector()));
+        this.setPosition(turtleAccess.getPosition().toCenterPos());
+        this.setWorld(turtleAccess.getLevel());
     }
 
     public static int getTurtleId(ITurtleAccess turtleAccess){
@@ -52,35 +50,35 @@ public class FakeTurtlePlayer extends ServerPlayer {
     }
 
 
-    @Override public void setPos(double x, double y, double z) {
+    @Override public void setPosition(double x, double y, double z) {
         //Stupid Java 17, cannot set turtleAccess before super call this.
-        if (turtleAccess != null) {turtleAccess.teleportTo(serverLevel(),BlockPos.containing(x,y,z));}
-        super.setPos(x,y,z);
+        if (turtleAccess != null) {turtleAccess.teleportTo(getServerWorld(),BlockPos.ofFloored(x,y,z));}
+        super.setPosition(x,y,z);
     }
-    @Override protected void setRot(float yRot, float xRot) {
-        turtleAccess.setDirection(Direction.fromYRot(yRot));
-        super.setRot(yRot,xRot);
+    @Override protected void setRotation(float yRot, float xRot) {
+        turtleAccess.setDirection(Direction.fromRotation(yRot));
+        super.setRotation(yRot,xRot);
     }
 
-    @Override public @NotNull Vec3 position() {return turtleAccess.getPosition().getCenter();}
-    @Override public float getEyeHeight(Pose pose) {return 0;}
+    @Override public @NotNull Vec3d getPos() {return turtleAccess.getPosition().toCenterPos();}
+    @Override public float getEyeHeight(EntityPose pose) {return 0;}
 
     //From Fabric's FakePlayer
     @Override public void tick() { }
-    @Override public void updateOptions(ServerboundClientInformationPacket packet) { }
-    @Override public void awardStat(Stat<?> stat, int amount) { }
+    @Override public void setClientSettings(ClientSettingsC2SPacket packet) { }
+    @Override public void increaseStat(Stat<?> stat, int amount) { }
     @Override public void resetStat(Stat<?> stat) { }
     @Override public boolean isInvulnerableTo(DamageSource damageSource) {
         return true;
     }
-    @Nullable @Override public Team getTeam() {return null;}
-    @Override public void startSleeping(BlockPos pos) {}
+    @Nullable @Override public AbstractTeam getScoreboardTeam() {return null;}
+    @Override public void sleep(BlockPos pos) {}
     @Override public boolean startRiding(Entity entity, boolean force) {
         return false;
     }
-    @Override public void openTextEdit(SignBlockEntity sign, boolean front) { }
-    @Override public @NotNull OptionalInt openMenu(@Nullable MenuProvider factory) {
+    @Override public void openEditSignScreen(SignBlockEntity sign, boolean front) { }
+    @Override public @NotNull OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
         return OptionalInt.empty();
     }
-    @Override public void openHorseInventory(AbstractHorse horse, Container inventory) { }
+    @Override public void openHorseInventory(AbstractHorseEntity horse, Inventory inventory) { }
 }

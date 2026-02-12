@@ -97,7 +97,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    //Java 25 source compatibility
+    //Java 25 compiler
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }

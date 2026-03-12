@@ -6,6 +6,6 @@ import me.alexyzer.hexcc.casting.TurtleCastingEnv;
 
 public class StaffTurtlePeripheral extends StaffPeripheral {
     public StaffTurtlePeripheral(ITurtleAccess turtleAccess, TurtleSide side) {
-        super(new TurtleCastingEnv(turtleAccess, side),turtleAccess.getUpgradeNBTData(side));
+        super(() -> new TurtleCastingEnv(turtleAccess, side), turtleAccess.getUpgradeNBTData(side));
     }
 }

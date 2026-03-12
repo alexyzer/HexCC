@@ -5,6 +5,6 @@ import me.alexyzer.hexcc.casting.PocketCastingEnvironment;
 
 public class StaffPocketPeripheral extends StaffPeripheral {
     public StaffPocketPeripheral(IPocketAccess pocketAccess) {
-        super(new PocketCastingEnvironment(pocketAccess),pocketAccess.getUpgradeNBTData());
+        super(() -> new PocketCastingEnvironment(pocketAccess), pocketAccess.getUpgradeNBTData());
     }
 }

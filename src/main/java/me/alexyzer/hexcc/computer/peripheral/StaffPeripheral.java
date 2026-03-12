@@ -11,6 +11,7 @@ import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.lua.MethodResult;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import me.alexyzer.NativeLuaIota;
 import me.alexyzer.hexcc.casting.ResponseWrapper.WithResponseWrapper;
@@ -20,18 +21,34 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class StaffPeripheral implements IPeripheral {
     public NbtCompound upgradeData;
+
+    private final Supplier<CastingEnvironment> castingEnvInitializer;
     public CastingVM castingVM;
+    private boolean isInit = false;
+
     public boolean needsUpdate = true;
 
-    protected StaffPeripheral(CastingEnvironment env, NbtCompound upgradeData){
+
+    public StaffPeripheral(Supplier<CastingEnvironment> castingEnvInitializer, NbtCompound upgradeData){
+        this.castingEnvInitializer = castingEnvInitializer;
         this.upgradeData = upgradeData;
+    }
+    @Override public void attach(@NotNull IComputerAccess ignored) {
+        isInit = true; //Assume it's never true when coming to this point. It should be used only for one computer at a time.
+        var env = castingEnvInitializer.get();
         castingVM = new CastingVM(CastingImage.loadFromNbt(upgradeData, env.getWorld()), env);
-    };
+    }
+    @Override public void detach(@NotNull IComputerAccess ignored) {
+        isInit = false;
+        castingVM = null; //Free when not used
+    }
 
     public void tick(){
+        if (!isInit) return;
         if (needsUpdate){
             needsUpdate = false;
             update();
@@ -43,6 +60,26 @@ public abstract class StaffPeripheral implements IPeripheral {
         needsUpdate |= oldImage.getOpsConsumed()>0;
         upgradeData.put("data",castingVM.getImage().serializeToNbt());
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //Lua section
     @LuaFunction(mainThread = true) public final MethodResult cast(IArguments args) throws LuaException {

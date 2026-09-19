@@ -37,6 +37,35 @@ subprojects {
                 includeGroup("cc.tweaked")
             }
         }
+
+        //Paucal and Patchouli
+        maven { url = 'https://maven.blamejared.com' }
+
+        //Caelus
+        maven {
+            name = "C4's Maven"
+            setUrl("https://maven.theillusivec4.top/")
+        }
+
+        //Kotlin for Forge
+        maven {
+            name = 'Kotlin for Forge'
+            url = 'https://thedarkcolour.github.io/KotlinForForge/'
+        }
+
+        //Cardinal Components
+        maven {
+            name = 'Ladysnake Mods'
+            url = 'https://maven.ladysnake.org/releases'
+        }
+
+        //Mod Menu
+        repositories {
+            maven {
+                name = "Terraformers"
+                url = "https://maven.terraformersmc.com/"
+            }
+        }
     }
 
     loom {

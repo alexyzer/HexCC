@@ -49,6 +49,28 @@ dependencies {
     forgeRuntimeLibrary "io.netty:netty-codec-http:4.1.82.Final"
     forgeRuntimeLibrary "io.netty:netty-codec-socks:4.1.82.Final"
     forgeRuntimeLibrary "io.netty:netty-handler-proxy:4.1.82.Final"
+
+    //HexCasting neoforge
+    implementation(files("libs/hexcasting-neoforge-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
+
+    //HexCasting dependencies
+    modRuntimeOnly("at.petra-k:paucal:$rootProject.paucal_version+$rootProject.minecraft_version-neoforge")
+    modRuntimeOnly("vazkii.patchouli:Patchouli:1.21-$rootProject.patchouli_version-NEOFORGE-SNAPSHOT")
+    modRuntimeOnly("com.illusivesoulworks.caelus:caelus-neoforge:$rootProject.neoforge_caelus_version+$rootProject.minecraft_version")
+    modRuntimeOnly("com.samsthenerd.inline:inline-neoforge:$rootProject.minecraft_version-$rootProject.inline_version")
+    modRuntimeOnly("thedarkcolour:kotlinforforge-neoforge:$rootProject.kotlinForForgeVersion")
+    forgeRuntimeLibrary("org.jetbrains.kotlin:kotlin-reflect:2.1.20")
+    forgeRuntimeLibrary("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
+    forgeRuntimeLibrary("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.20")
+    forgeRuntimeLibrary("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.20")
+    forgeRuntimeLibrary("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
+    forgeRuntimeLibrary("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.2")
+    forgeRuntimeLibrary("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1")
+    forgeRuntimeLibrary("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
+
+    //Inline dependencies
+    modRuntimeOnly("me.shedaniel.cloth:cloth-config-neoforge:$rootProject.cloth_config_version")
+    modRuntimeOnly("dev.architectury:architectury-neoforge:$architecturyVersion")
 }
 
 processResources {

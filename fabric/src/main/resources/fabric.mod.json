@@ -19,7 +19,7 @@
       "alexyzer.hexcc.fabric.HexCCFabric"
     ],
     "client": [
-      "alexyzer.hexcc.fabric.client.HexCCFabricClient"
+      "alexyzer.hexcc.fabric.HexCCFabricClient"
     ]
   },
   "mixins": [

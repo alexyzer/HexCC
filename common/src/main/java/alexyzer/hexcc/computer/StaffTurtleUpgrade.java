@@ -25,6 +25,6 @@ public class StaffTurtleUpgrade extends StaffUpgrade implements ITurtleUpgrade {
 
     @Override
     public @Nullable IPeripheral createPeripheral(ITurtleAccess turtle, TurtleSide side) {
-        return createPeripheral();
+        return new StaffPeripheral(turtle, side);
     }
 }

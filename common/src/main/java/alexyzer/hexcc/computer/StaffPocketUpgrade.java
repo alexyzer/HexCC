@@ -18,6 +18,6 @@ public class StaffPocketUpgrade extends StaffUpgrade implements IPocketUpgrade {
 
     @Override
     public @Nullable IPeripheral createPeripheral(IPocketAccess access) {
-        return createPeripheral();
+        return new StaffPeripheral(access);
     }
 }

@@ -12,6 +12,9 @@ dependencies {
     // Do NOT use other classes from Fabric Loader.
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
+    //CC:Tweaked common
+    compileOnly("cc.tweaked:cc-tweaked-$rootProject.minecraft_version-common-api:$rootProject.cc_tweaked_version")
+
     //HexCasting common
     modCompileOnly(files("libs/hexcasting-common-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
 }

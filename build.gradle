@@ -75,9 +75,6 @@ subprojects {
     dependencies {
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
         mappings loom.officialMojangMappings()
-
-        //CC:Tweaked common
-        compileOnly("cc.tweaked:cc-tweaked-$rootProject.minecraft_version-common-api:$rootProject.cc_tweaked_version")
     }
 
     java {

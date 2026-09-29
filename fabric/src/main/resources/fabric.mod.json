@@ -30,7 +30,7 @@
     "minecraft": "~1.21.1",
     "java": ">=21",
     "fabric-api": "*",
-    "hexcasting": ">=0.12.0",
+    "hexcasting": ">=0.12.0-devel-pre-53",
     "computercraft": ">=1.120.2"
   },
   "suggests": {

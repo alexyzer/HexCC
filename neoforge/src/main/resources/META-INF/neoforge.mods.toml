@@ -37,7 +37,7 @@ side = "BOTH"
 [[dependencies.hexcc]]
 modId = "computercraft"
 type = "required"
-versionRange = "[1.120.2,)"
+versionRange = "[1.113.0,)"
 ordering = "NONE"
 side = "BOTH"
 

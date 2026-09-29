@@ -19,6 +19,6 @@ public abstract class StaffUpgrade implements UpgradeBase {
 
     @Override
     public ItemStack getCraftingItem() {
-        return HexItems.STAFF_MINDSPLICE.get().getDefaultInstance();
+        return HexItems.STAFF_MINDSPLICE.getDefaultInstance();
     }
 }

@@ -13,12 +13,10 @@ import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
 import at.petrak.hexcasting.api.casting.iota.*;
 import at.petrak.hexcasting.api.casting.math.HexDir;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
-import at.petrak.hexcasting.api.casting.math.HexSignature;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.casting.mishaps.MishapNotEnoughArgs;
 import at.petrak.hexcasting.api.casting.mishaps.MishapStackSize;
 import at.petrak.hexcasting.api.utils.TreeList;
-import at.petrak.hexcasting.common.casting.actions.eval.OpEval;
 import at.petrak.hexcasting.common.lib.hex.HexActions;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -102,14 +100,14 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction(value = "cast", mainThread = true)
     public final MethodResult lua$cast(IArguments args) throws LuaException {
         return cast(switch (args.count()) {
-            case 0 -> new PatternIota(HexActions.EVAL.value().prototype());
+            case 0 -> new PatternIota(HexActions.EVAL.prototype());
             case 1 -> {
                 if (args.getType(0).equals("string"))
-                    yield new PatternIota(HexPattern.fromAngleString(args.getString(0), HexDir.NORTH_EAST));
+                    yield new PatternIota(HexPattern.fromAngles(args.getString(0), HexDir.NORTH_EAST));
                 else
                     yield LuaIota.fromLua(args.get(0));
             }
-            case 2 -> new PatternIota(HexPattern.fromAngleString(
+            case 2 -> new PatternIota(HexPattern.fromAngles(
                     args.getString(0),
                     HexDir.fromString(args.getString(1))
             ));

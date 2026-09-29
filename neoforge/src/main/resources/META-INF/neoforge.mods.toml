@@ -30,7 +30,7 @@ side = "BOTH"
 [[dependencies.hexcc]]
 modId = "hexcasting"
 type = "required"
-versionRange = "[0.12.0-devel-pre-35,)"
+versionRange = "[0.12.0-devel-pre-34,)"
 ordering = "NONE"
 side = "BOTH"
 

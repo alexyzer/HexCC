@@ -6,8 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "CastingImageAccessor",
-    "IotaBridge$LuaIota"
   ],
   "injectors": {
     "defaultRequire": 1

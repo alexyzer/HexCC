@@ -3,9 +3,9 @@
   "id": "hexcc",
   "version": "${version}",
   "name": "HexCC",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "Hex Casting - CC:Tweaked interop.",
   "authors": [
-    "Me!"
+    "alexyzer"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -29,7 +29,9 @@
     "fabricloader": ">=0.19.5",
     "minecraft": "~1.21.1",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "hexcasting": ">=0.12.0",
+    "computercraft": ">=1.120.2"
   },
   "suggests": {
     "another-mod": "*"

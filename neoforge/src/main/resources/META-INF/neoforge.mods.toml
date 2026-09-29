@@ -7,9 +7,9 @@ license = "Insert License Here"
 modId = "hexcc"
 version = "${version}"
 displayName = "HexCC"
-authors = "Me!"
+authors = "alexyzer"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Hex Casting - CC:Tweaked interop.
 '''
 #logoFile = ""
 
@@ -24,6 +24,20 @@ side = "BOTH"
 modId = "minecraft"
 type = "required"
 versionRange = "[1.21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.hexcc]]
+modId = "hexcasting"
+type = "required"
+versionRange = "[0.12.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.hexcc]]
+modId = "computercraft"
+type = "required"
+versionRange = "[1.120.2,)"
 ordering = "NONE"
 side = "BOTH"
 

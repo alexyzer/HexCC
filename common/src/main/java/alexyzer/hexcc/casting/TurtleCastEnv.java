@@ -1,9 +1,12 @@
 package alexyzer.hexcc.casting;
 
-import alexyzer.hexcc.HexCCUtil;
+import alexyzer.hexcc.util.Misc;
 import at.petrak.hexcasting.api.casting.ParticleSpray;
+import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
+import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
+import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import net.minecraft.core.BlockPos;
@@ -32,11 +35,20 @@ public class TurtleCastEnv extends CastingEnvironment implements IComputerBasedC
 
     //IComputerBasedCastEnv
 
-    public final HexCCUtil.DumpableList<String> revealBuffer = new HexCCUtil.DumpableList<>();
+    public final Misc.DumpableList<String> revealBuffer = new Misc.DumpableList<>();
+    public @Nullable OperatorSideEffect.DoMishap lastMishap;
 
     @Override
-    public HexCCUtil.DumpableList<String> getRevealBuffer() {
+    public Misc.DumpableList<String> getRevealBuffer() {
         return revealBuffer;
+    }
+
+    public @Nullable OperatorSideEffect.DoMishap getLastMishap() {
+        return lastMishap;
+    }
+
+    public void clearMishap() {
+        lastMishap = null;
     }
 
     @Override
@@ -44,6 +56,11 @@ public class TurtleCastEnv extends CastingEnvironment implements IComputerBasedC
         revealBuffer.add(component.getString());
     }
 
+    @Override
+    public void postExecution(CastResult result) {
+        lastMishap = checkMishap(result);
+        super.postExecution(result);
+    }
 
     //CastingEnvironment
 
@@ -84,7 +101,7 @@ public class TurtleCastEnv extends CastingEnvironment implements IComputerBasedC
 
     @Override
     public List<ItemStack> getUsableStacks(StackDiscoveryMode mode) {
-        return HexCCUtil.getItems(turtle.getInventory());
+        return Misc.getItems(turtle.getInventory());
     }
 
     @Override

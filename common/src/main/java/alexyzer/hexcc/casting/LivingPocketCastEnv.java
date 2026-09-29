@@ -1,9 +1,12 @@
 package alexyzer.hexcc.casting;
 
-import alexyzer.hexcc.HexCCUtil;
+import alexyzer.hexcc.util.Misc;
 import at.petrak.hexcasting.api.casting.ParticleSpray;
+import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
+import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
+import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraft.core.BlockPos;
@@ -30,11 +33,20 @@ public class LivingPocketCastEnv extends CastingEnvironment implements IComputer
 
     //IComputerBasedCastEnv
 
-    public final HexCCUtil.DumpableList<String> revealBuffer = new HexCCUtil.DumpableList<>();
+    public final Misc.DumpableList<String> revealBuffer = new Misc.DumpableList<>();
+    public @Nullable OperatorSideEffect.DoMishap lastMishap;
 
     @Override
-    public HexCCUtil.DumpableList<String> getRevealBuffer() {
+    public Misc.DumpableList<String> getRevealBuffer() {
         return revealBuffer;
+    }
+
+    public @Nullable OperatorSideEffect.DoMishap getLastMishap() {
+        return lastMishap;
+    }
+
+    public void clearMishap() {
+        lastMishap = null;
     }
 
     @Override
@@ -42,6 +54,11 @@ public class LivingPocketCastEnv extends CastingEnvironment implements IComputer
         revealBuffer.add(component.getString());
     }
 
+    @Override
+    public void postExecution(CastResult result) {
+        lastMishap = checkMishap(result);
+        super.postExecution(result);
+    }
 
     //CastingEnvironment
 
@@ -68,7 +85,7 @@ public class LivingPocketCastEnv extends CastingEnvironment implements IComputer
     @Override
     protected long extractMediaEnvironment(long cost, boolean simulate) {
         var livingEntity = getCastingEntity();
-        return HexCCUtil.extractMediaFromInventory(livingEntity.getAllSlots(), cost, true, simulate, livingEntity, -1);
+        return Misc.extractMediaFromInventory(livingEntity.getAllSlots(), cost, true, simulate, livingEntity, -1);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package alexyzer.hexcc;
+package alexyzer.hexcc.util;
 
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.addldata.ADMediaHolder;
@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
+import dan200.computercraft.api.lua.LuaTable;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -16,15 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class HexCCUtil {
-
-    public static List<ItemStack> getItems(Container container) {
-        var stackArr = new ItemStack[container.getContainerSize()];
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            stackArr[i] = container.getItem(i);
-        }
-        return Arrays.asList(stackArr);
-    }
+public class Misc {
 
     public static class DumpableList<T> extends ArrayList<T> {
         public List<T> dump() {
@@ -75,7 +68,7 @@ public class HexCCUtil {
     @SuppressWarnings("JavadocReference") //I hope javadoc working just in source is fine.
     public static long extractMediaFromInventory(Iterable<ItemStack> inventory, long cost, boolean allowOvercast, boolean simulate, @Nullable LivingEntity damageableEntity, int optionalSize) {
 
-        List<ADMediaHolder> sources = HexCCUtil.scanItemsForMediaStuff(inventory, optionalSize);
+        List<ADMediaHolder> sources = Misc.scanItemsForMediaStuff(inventory, optionalSize);
 
         for(ADMediaHolder source : sources) {
             long found = MediaHelper.extractMedia(source, cost, false, simulate);
@@ -105,5 +98,24 @@ public class HexCCUtil {
         }
 
         return cost;
+    }
+
+    public static List<ItemStack> getItems(Container container) {
+        var stackArr = new ItemStack[container.getContainerSize()];
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            stackArr[i] = container.getItem(i);
+        }
+        return Arrays.asList(stackArr);
+    }
+
+    /** @return sequence {@code table.size()} or {@code -1} if not sequence. **/
+    public static int getSequence(Map<?, ?> table) {
+        if (table instanceof LuaTable<?,?> luaTable) {
+            return luaTable.size() == luaTable.length() ? luaTable.size() : -1;
+        } else {
+            var sequence = 0;
+            while (table.containsKey((double) (sequence + 1))) sequence++;
+            return table.size() == sequence ? sequence : -1;
+        }
     }
 }

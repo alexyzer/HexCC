@@ -11,7 +11,7 @@ authors = "alexyzer"
 description = '''
 Hex Casting - CC:Tweaked interop.
 '''
-#logoFile = ""
+logoFile = "hexcc.png"
 
 [[dependencies.hexcc]]
 modId = "neoforge"

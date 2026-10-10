@@ -6,6 +6,7 @@ import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
+import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
@@ -23,6 +24,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleSide;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -144,6 +146,29 @@ public class StaffPeripheral implements IPeripheral {
             stack.addOne(LuaIota.fromLua(luaIota, env.getWorld()));
         }
         setStack(stack.result());
+    }
+
+    @LuaFunction("clear")
+    public final void lua$clear() {
+        var image = vm.getImage();
+
+        //TODO maybe add data driven way to define what other data to preserve?
+        var newUserData = new CompoundTag();
+
+        var add_motion_nerf = image.getUserData().get("hexcasting:impulsed");
+        newUserData.put("hexcasting:impulsed", add_motion_nerf);
+
+        image = image.copy(
+                TreeList.empty(), //clear stack
+                0, //clear parenthesized count
+                TreeList.empty(), //clear parenthesized iotas
+                false, //cancel escape
+                false, //cancel simulate
+                image.getOpsConsumed(), //Keep used ops
+                newUserData //Clear userdata
+        );
+
+        vm.setImage(image);
     }
 
     public TreeList<Iota> getStack() {

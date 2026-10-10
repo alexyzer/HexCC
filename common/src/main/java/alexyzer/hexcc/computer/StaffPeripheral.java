@@ -157,13 +157,6 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("clear")
     public final void lua$clear() {
         var image = vm.getImage();
-
-        //TODO maybe add data driven way to define what other data to preserve?
-        var newUserData = new CompoundTag();
-
-        var add_motion_nerf = image.getUserData().get("hexcasting:impulsed");
-        newUserData.put("hexcasting:impulsed", add_motion_nerf);
-
         image = image.copy(
                 TreeList.empty(), //clear stack
                 0, //clear parenthesized count
@@ -171,9 +164,8 @@ public class StaffPeripheral implements IPeripheral {
                 false, //cancel escape
                 false, //cancel simulate
                 image.getOpsConsumed(), //Keep used ops
-                newUserData //Clear userdata
+                new CompoundTag() //Clear userdata
         );
-
         vm.setImage(image);
     }
 

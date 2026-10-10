@@ -17,6 +17,7 @@ import at.petrak.hexcasting.api.casting.math.HexDir;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.casting.mishaps.MishapStackSize;
+import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.TreeList;
 import at.petrak.hexcasting.common.lib.hex.HexActions;
 import dan200.computercraft.api.lua.IArguments;
@@ -85,10 +86,30 @@ public class StaffPeripheral implements IPeripheral {
         return other != null && other.getClass() == StaffPeripheral.class;
     }
 
+    //TODO add config
+    final int REPLENISH_TICKS = 200;
+
+    public boolean needsUpdate = false;
+
+    public void update() {
+        if (vm != null && needsUpdate) {
+            needsUpdate = false;
+            var image = vm.getImage();
+
+            var replenish_rate = HexConfig.ServerConfigAccess.DEFAULT_MAX_OP_COUNT / REPLENISH_TICKS;
+            var ops_consumed = Math.max(image.getOpsConsumed() - replenish_rate, 0);
+            if (ops_consumed > 0) needsUpdate = true; //Update until 0
+
+            image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getUserData());
+            vm.setImage(image);
+        }
+    }
+
 
     //Lua
 
     public MethodResult cast(Iota iota) throws LuaException {
+        needsUpdate = true;
         var level = env.getWorld();
         if (iota instanceof ListIota listIota)
             vm.queueExecuteAndWrapIotas(listIota.getList(), level);
@@ -156,6 +177,7 @@ public class StaffPeripheral implements IPeripheral {
 
     @LuaFunction("clear")
     public final void lua$clear() {
+        needsUpdate = true;
         var image = vm.getImage();
         image = image.copy(
                 TreeList.empty(), //clear stack
@@ -174,6 +196,7 @@ public class StaffPeripheral implements IPeripheral {
     }
 
     public void setStack(TreeList<Iota> newStack) throws LuaException {
+        needsUpdate = true;
         var image = vm.getImage();
         if (IotaType.isTooLargeToSerialize(newStack)) doMishap(new MishapStackSize());
         image = image.copy(newStack, image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), image.getOpsConsumed(), image.getUserData());
@@ -181,6 +204,7 @@ public class StaffPeripheral implements IPeripheral {
     }
 
     public void doMishap(Mishap mishap) throws LuaException {
+        needsUpdate = true;
         var ctx = new Mishap.Context(null, null);
         vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, ctx)));
         throw new LuaException(mishap.errorMessageWithName(env, ctx).getString());

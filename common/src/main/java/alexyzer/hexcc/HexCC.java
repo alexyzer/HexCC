@@ -3,6 +3,7 @@ package alexyzer.hexcc;
 import alexyzer.hexcc.util.IotaPermit;
 import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 
 public final class HexCC {
@@ -13,8 +14,8 @@ public final class HexCC {
         // Write common init code here.
     }
 
-    public static void onServerStarting(MinecraftServer server) {
-        IotaPermit.init(server);
+    public static void onReloadAsync(ResourceManager resourceManager) {
+        IotaPermit.reload(resourceManager);
     }
 
     public static void onServerStopping(MinecraftServer server) {

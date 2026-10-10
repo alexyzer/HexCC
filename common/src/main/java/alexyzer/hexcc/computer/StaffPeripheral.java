@@ -2,7 +2,6 @@ package alexyzer.hexcc.computer;
 
 import alexyzer.hexcc.HexCC;
 import alexyzer.hexcc.casting.IComputerBasedCastEnv;
-import alexyzer.hexcc.util.Misc;
 import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
@@ -13,12 +12,10 @@ import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
 import at.petrak.hexcasting.api.casting.iota.*;
 import at.petrak.hexcasting.api.casting.math.HexDir;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
-import at.petrak.hexcasting.api.casting.math.HexSignature;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.casting.mishaps.MishapNotEnoughArgs;
 import at.petrak.hexcasting.api.casting.mishaps.MishapStackSize;
 import at.petrak.hexcasting.api.utils.TreeList;
-import at.petrak.hexcasting.common.casting.actions.eval.OpEval;
 import at.petrak.hexcasting.common.lib.hex.HexActions;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -107,7 +104,7 @@ public class StaffPeripheral implements IPeripheral {
                 if (args.getType(0).equals("string"))
                     yield new PatternIota(HexPattern.fromAngleString(args.getString(0), HexDir.NORTH_EAST));
                 else
-                    yield LuaIota.fromLua(args.get(0));
+                    yield LuaIota.fromLua(args.get(0), env.getWorld());
             }
             case 2 -> new PatternIota(HexPattern.fromAngleString(
                     args.getString(0),
@@ -119,7 +116,7 @@ public class StaffPeripheral implements IPeripheral {
 
     @LuaFunction("pushStack")
     public final void lua$pushStack(IArguments args) throws LuaException {
-        setStack(getStack().appendedAll(LuaIota.parseArgs(args.getAll())));
+        setStack(getStack().appendedAll(LuaIota.parseArgs(env.getWorld(), args.getAll())));
     }
 
     @LuaFunction("popStack")
@@ -144,7 +141,7 @@ public class StaffPeripheral implements IPeripheral {
         for (double i = 1.0; i <= luaIotasSeq.size(); i++) {
             var luaIota = luaIotasSeq.get(i);
             if (luaIota == null) break;
-            stack.addOne(LuaIota.fromLua(luaIota));
+            stack.addOne(LuaIota.fromLua(luaIota, env.getWorld()));
         }
         setStack(stack.result());
     }

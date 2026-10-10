@@ -120,22 +120,19 @@ public class Misc {
         }
     }
 
-    /** {@link ResourceLocation#tryParse(String)} adapted to use {@link HexAPI#MOD_ID} as default namespace. **/
-    @Nullable
-    public static ResourceLocation tryParseWithHexDefault(String str) {
-        int i = str.indexOf(':');
+    /** {@link ResourceLocation#parse(String)} adapted to use {@link HexAPI#MOD_ID} as default namespace. **/
+    public static ResourceLocation parseWithHexDefault(String string) {
+        int i = string.indexOf(':');
         if (i >= 0) {
-            String path = str.substring(i + 1);
-            if (!ResourceLocation.isValidPath(path)) {
-                return null;
-            } else if (i != 0) {
-                String namespace = str.substring(0, i);
-                return ResourceLocation.isValidNamespace(namespace) ? ResourceLocation.fromNamespaceAndPath(namespace, path) : null;
+            String path = string.substring(i + 1);
+            if (i != 0) {
+                String namespace = string.substring(0, i);
+                return ResourceLocation.fromNamespaceAndPath(namespace, path);
             } else {
                 return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, path);
             }
         } else {
-            return ResourceLocation.isValidPath(str) ? ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, str) : null;
+            return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, string);
         }
     }
 }

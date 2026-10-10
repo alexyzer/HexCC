@@ -11,6 +11,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import alexyzer.hexcc.HexCC;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(HexCC.MOD_ID)
@@ -38,5 +40,15 @@ public final class HexCCNeoForge {
     @SubscribeEvent
     public static void registerTurtleModellers(RegisterTurtleModellersEvent event) {
         event.register(StaffTurtleUpgrade.TYPE, TurtleUpgradeModeller.flatItem());
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(ServerStartingEvent event) {
+        HexCC.onServerStarting(event.getServer());
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        HexCC.onServerStopping(event.getServer());
     }
 }

@@ -15,7 +15,9 @@ public class LuaIota {
 
     public static Iota parseIota(Map<String, Object> iotaTable) {
         //TODO add error and blacklist handling
-        return IotaType.TYPED_CODEC.parse(LuaOps.INSTANCE, iotaTable).getOrThrow();
+        var iota = IotaType.TYPED_CODEC.parse(LuaOps.INSTANCE, iotaTable).getOrThrow();
+        if (!IotaPermit.isDeserializationAllowed(iota.getType())) return new GarbageIota();
+        return iota;
     }
 
     public static Iota fromLua(Object lua) {

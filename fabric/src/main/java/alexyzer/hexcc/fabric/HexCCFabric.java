@@ -1,5 +1,6 @@
 package alexyzer.hexcc.fabric;
 
+import alexyzer.hexcc.HexCC;
 import alexyzer.hexcc.computer.StaffPocketUpgrade;
 import alexyzer.hexcc.computer.StaffTurtleUpgrade;
 import alexyzer.hexcc.computer.StaffUpgrade;
@@ -7,12 +8,9 @@ import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeType;
 import net.fabricmc.api.ModInitializer;
-
-import alexyzer.hexcc.HexCC;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public final class HexCCFabric implements ModInitializer {
     @Override
@@ -34,5 +32,8 @@ public final class HexCCFabric implements ModInitializer {
 
         Registry.register(TURTLE_UPGRADE_SERIALIZERS, StaffUpgrade.RESOURCE_LOCATION, StaffTurtleUpgrade.TYPE);
         Registry.register(POCKET_UPGRADE_SERIALIZERS, StaffUpgrade.RESOURCE_LOCATION, StaffPocketUpgrade.TYPE);
+
+        ServerLifecycleEvents.SERVER_STARTING.register(HexCC::onServerStarting);
+        ServerLifecycleEvents.SERVER_STOPPING.register(HexCC::onServerStopping);
     }
 }

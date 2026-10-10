@@ -82,8 +82,7 @@ public class StaffPeripheral implements IPeripheral {
 
     @Override
     public boolean equals(@Nullable IPeripheral other) {
-        //Stub
-        return other != null && other.getClass() == StaffPeripheral.class;
+        return this == other;
     }
 
     //TODO add config

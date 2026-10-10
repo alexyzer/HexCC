@@ -92,7 +92,7 @@ public class IotaPermit {
         public static boolean ALLOW_PLAYER_DESERIALIZATION = false;
         public static boolean ALLOW_INVALID_PATTERNS = false;
 
-        public static void init() {
+        public static void register() {
             registerIotaDeserializationValidator(HexIotaTypes.ENTITY.get(), BuiltInValidators::validateEntity);
             registerIotaDeserializationValidator(HexIotaTypes.LIST.get(), BuiltInValidators::validateList);
             registerIotaDeserializationValidator(HexIotaTypes.PATTERN.get(), BuiltInValidators::validatePattern);

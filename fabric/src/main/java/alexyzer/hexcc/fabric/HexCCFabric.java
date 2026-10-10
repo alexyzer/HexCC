@@ -29,7 +29,7 @@ public final class HexCCFabric implements ModInitializer {
         // Proceed with mild caution.
 
         // Run our common setup.
-        HexCC.init();
+        HexCC.onCommonSetup();
 
         @SuppressWarnings("unchecked")
         var TURTLE_UPGRADE_SERIALIZERS = (Registry<UpgradeType<? extends ITurtleUpgrade>>) BuiltInRegistries.REGISTRY.get(ITurtleUpgrade.typeRegistry().location());

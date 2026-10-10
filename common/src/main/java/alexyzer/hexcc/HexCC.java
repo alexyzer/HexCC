@@ -10,8 +10,8 @@ public final class HexCC {
     public static final String MOD_ID = "hexcc";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static void init() {
-        // Write common init code here.
+    public static void onCommonSetup() {
+        IotaPermit.BuiltInValidators.register();
     }
 
     public static void onReloadAsync(ResourceManager resourceManager) {

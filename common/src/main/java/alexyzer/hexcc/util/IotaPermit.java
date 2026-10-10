@@ -68,8 +68,8 @@ public class IotaPermit {
     public static Iota parseValidateLuaIota(Map<String, Object> luaIota, @Nullable ServerLevel level) {
         try {
             var resLoc = Misc.parseWithHexDefault((String) luaIota.get("type"));
-            var iotaType = HexIotaTypes.REGISTRY.get(resLoc);
-            var allowed = typePermits.getOrDefault(iotaType, ALLOW_BY_DEFAULT);
+
+            var allowed = typePermits.getOrDefault(resLoc, ALLOW_BY_DEFAULT);
             if (!allowed) return new GarbageIota();
 
             var iota = IotaType.TYPED_CODEC.decode(LuaOps.INSTANCE, luaIota).getOrThrow().getFirst();

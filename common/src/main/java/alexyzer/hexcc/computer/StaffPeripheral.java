@@ -2,23 +2,27 @@ package alexyzer.hexcc.computer;
 
 import alexyzer.hexcc.HexCC;
 import alexyzer.hexcc.casting.IComputerBasedCastEnv;
-import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
-import at.petrak.hexcasting.api.HexAPI;
+import alexyzer.hexcc.util.LuaIota;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
-import at.petrak.hexcasting.api.casting.iota.*;
+import at.petrak.hexcasting.api.casting.iota.Iota;
+import at.petrak.hexcasting.api.casting.iota.IotaType;
+import at.petrak.hexcasting.api.casting.iota.ListIota;
+import at.petrak.hexcasting.api.casting.iota.PatternIota;
 import at.petrak.hexcasting.api.casting.math.HexDir;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
-import at.petrak.hexcasting.api.casting.mishaps.MishapNotEnoughArgs;
 import at.petrak.hexcasting.api.casting.mishaps.MishapStackSize;
 import at.petrak.hexcasting.api.utils.TreeList;
 import at.petrak.hexcasting.common.lib.hex.HexActions;
-import dan200.computercraft.api.lua.*;
+import dan200.computercraft.api.lua.IArguments;
+import dan200.computercraft.api.lua.LuaException;
+import dan200.computercraft.api.lua.LuaFunction;
+import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.IPocketAccess;
@@ -30,7 +34,9 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static alexyzer.hexcc.computer.StaffUpgrade.TYPE_STR;
@@ -124,7 +130,7 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("popStack")
     public final Map<String, Object> lua$popStack() throws LuaException {
         var oldStack = getStack();
-        if (oldStack.isEmpty()) doMishap(new MishapNotEnoughArgs(1, 0));
+        if (oldStack.isEmpty()) return null; //To be on par with table.remove actually
         setStack(oldStack.tail());
         return LuaIota.toLua(oldStack.last());
     }

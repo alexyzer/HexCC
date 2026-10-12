@@ -8,6 +8,7 @@ import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import dan200.computercraft.api.lua.LuaTable;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -116,6 +117,22 @@ public class Misc {
             var sequence = 0;
             while (table.containsKey((double) (sequence + 1))) sequence++;
             return table.size() == sequence ? sequence : -1;
+        }
+    }
+
+    /** {@link ResourceLocation#parse(String)} adapted to use {@link HexAPI#MOD_ID} as default namespace. **/
+    public static ResourceLocation parseWithHexDefault(String string) {
+        int i = string.indexOf(':');
+        if (i >= 0) {
+            String path = string.substring(i + 1);
+            if (i != 0) {
+                String namespace = string.substring(0, i);
+                return ResourceLocation.fromNamespaceAndPath(namespace, path);
+            } else {
+                return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, path);
+            }
+        } else {
+            return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, string);
         }
     }
 }

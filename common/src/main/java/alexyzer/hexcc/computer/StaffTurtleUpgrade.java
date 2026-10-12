@@ -27,4 +27,11 @@ public class StaffTurtleUpgrade extends StaffUpgrade implements ITurtleUpgrade {
     public @Nullable IPeripheral createPeripheral(ITurtleAccess turtle, TurtleSide side) {
         return new StaffPeripheral(turtle, side);
     }
+
+    @Override
+    public void update(ITurtleAccess turtle, TurtleSide side) {
+        var peripheral = turtle.getPeripheral(side);
+        if (peripheral instanceof StaffPeripheral staffPeripheral)
+            staffPeripheral.update();
+    }
 }

@@ -11,14 +11,20 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import alexyzer.hexcc.HexCC;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 @Mod(HexCC.MOD_ID)
 @EventBusSubscriber(modid = HexCC.MOD_ID)
 public final class HexCCNeoForge {
-    public HexCCNeoForge() {
-        // Run our common setup.
-        HexCC.init();
+
+    @SubscribeEvent
+    public static void onCommonSetup(FMLCommonSetupEvent event) {
+        HexCC.onCommonSetup();
     }
 
     @SubscribeEvent
@@ -38,5 +44,19 @@ public final class HexCCNeoForge {
     @SubscribeEvent
     public static void registerTurtleModellers(RegisterTurtleModellersEvent event) {
         event.register(StaffTurtleUpgrade.TYPE, TurtleUpgradeModeller.flatItem());
+    }
+
+    @SubscribeEvent
+    public static void onReload(AddReloadListenerEvent event) {
+        event.addListener(
+                (barrier, resourceManager, _3, _4, backgroundExecutor, _6) ->
+                        CompletableFuture.runAsync(() ->
+                                HexCC.onReloadAsync(resourceManager), backgroundExecutor).thenCompose(barrier::wait)
+        );
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        HexCC.onServerStopping(event.getServer());
     }
 }

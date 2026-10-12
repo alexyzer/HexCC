@@ -46,11 +46,14 @@ dependencies {
     modRuntimeOnly("org.ladysnake.cardinal-components-api:cardinal-components-item:$rootProject.fabric_cardinal_components_version")
     modRuntimeOnly("org.ladysnake.cardinal-components-api:cardinal-components-block:$rootProject.fabric_cardinal_components_version")
     modRuntimeOnly("net.fabricmc:fabric-language-kotlin:$rootProject.fabricLanguageKotlinVersion")
-    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version")
+    //modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version") //Duplicate
 
     //Inline dependencies
     modRuntimeOnly("me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version")
     modRuntimeOnly("dev.architectury:architectury-fabric:$architecturyVersion")
+
+    //For SERVER_STARTING and SERVER_STOPPING hooks on fabric
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version")
 }
 
 processResources {

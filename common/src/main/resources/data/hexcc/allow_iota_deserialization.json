@@ -1,0 +1,11 @@
+{
+  "null": true,
+  "double": true,
+  "boolean": true,
+  "entity": true,
+  "list": true,
+  "pattern": true,
+  "garbage": true,
+  "vec3": true,
+  "continuation": true
+}

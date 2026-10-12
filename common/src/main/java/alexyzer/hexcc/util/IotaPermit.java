@@ -93,10 +93,10 @@ public class IotaPermit {
         public static boolean ALLOW_INVALID_PATTERNS = false;
 
         public static void register() {
-            registerIotaDeserializationValidator(HexIotaTypes.ENTITY.get(), BuiltInValidators::validateEntity);
-            registerIotaDeserializationValidator(HexIotaTypes.LIST.get(), BuiltInValidators::validateList);
-            registerIotaDeserializationValidator(HexIotaTypes.PATTERN.get(), BuiltInValidators::validatePattern);
-            registerIotaDeserializationValidator(HexIotaTypes.CONTINUATION.get(), BuiltInValidators::validateContinuation);
+            registerIotaDeserializationValidator(HexIotaTypes.ENTITY, BuiltInValidators::validateEntity);
+            registerIotaDeserializationValidator(HexIotaTypes.LIST, BuiltInValidators::validateList);
+            registerIotaDeserializationValidator(HexIotaTypes.PATTERN, BuiltInValidators::validatePattern);
+            registerIotaDeserializationValidator(HexIotaTypes.CONTINUATION, BuiltInValidators::validateContinuation);
         }
 
         public static Iota validateEntity(Iota entityIota, ServerLevel level) {
@@ -115,7 +115,7 @@ public class IotaPermit {
         public static Iota validatePattern(Iota patternIota, ServerLevel level) {
             if (ALLOW_INVALID_PATTERNS) return patternIota;
 
-            for (HexAngle angle : ((PatternIota) patternIota).getPattern().getSignature())
+            for (HexAngle angle : ((PatternIota) patternIota).getPattern().getAngles())
                 if (angle == HexAngle.BACK) return new GarbageIota();
 
             return patternIota;

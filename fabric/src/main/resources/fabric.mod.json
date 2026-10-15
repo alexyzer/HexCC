@@ -20,6 +20,9 @@
     ],
     "client": [
       "alexyzer.hexcc.fabric.HexCCFabricClient"
+    ],
+    "modmenu": [
+      "alexyzer.hexcc.optional.ModMenuIntegration"
     ]
   },
   "mixins": [

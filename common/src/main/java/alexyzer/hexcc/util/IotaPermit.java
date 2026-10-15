@@ -1,6 +1,7 @@
 package alexyzer.hexcc.util;
 
 import alexyzer.hexcc.HexCC;
+import alexyzer.hexcc.HexCCConfig;
 import at.petrak.hexcasting.api.casting.eval.vm.ContinuationFrame;
 import at.petrak.hexcasting.api.casting.eval.vm.FrameEvaluate;
 import at.petrak.hexcasting.api.casting.eval.vm.FrameForEach;
@@ -62,14 +63,11 @@ public class IotaPermit {
         }
     }
 
-    //TODO add config
-    public static boolean ALLOW_BY_DEFAULT = false;
-
     public static Iota parseValidateLuaIota(Map<String, Object> luaIota, @Nullable ServerLevel level) {
         try {
             var resLoc = Misc.parseWithHexDefault((String) luaIota.get("type"));
 
-            var allowed = typePermits.getOrDefault(resLoc, ALLOW_BY_DEFAULT);
+            var allowed = typePermits.getOrDefault(resLoc, HexCCConfig.ALLOW_UNKNOWN_IOTAS);
             if (!allowed) return new GarbageIota();
 
             var iota = IotaType.TYPED_CODEC.decode(LuaOps.INSTANCE, luaIota).getOrThrow().getFirst();
@@ -88,10 +86,6 @@ public class IotaPermit {
 
     public static class BuiltInValidators {
 
-        //TODO add config
-        public static boolean ALLOW_PLAYER_DESERIALIZATION = false;
-        public static boolean ALLOW_INVALID_PATTERNS = false;
-
         public static void register() {
             registerIotaDeserializationValidator(HexIotaTypes.ENTITY.get(), BuiltInValidators::validateEntity);
             registerIotaDeserializationValidator(HexIotaTypes.LIST.get(), BuiltInValidators::validateList);
@@ -103,7 +97,7 @@ public class IotaPermit {
             var valid = EntityIota.TYPE.validate(((EntityIota) entityIota), level);
             if (!valid) return new NullIota();
 
-            if (!ALLOW_PLAYER_DESERIALIZATION && ((EntityIota) entityIota).isPlayer()) return new GarbageIota();
+            if (!HexCCConfig.ALLOW_PLAYER_DESERIALIZATION && ((EntityIota) entityIota).isPlayer()) return new GarbageIota();
 
             return entityIota;
         }
@@ -113,7 +107,7 @@ public class IotaPermit {
         }
 
         public static Iota validatePattern(Iota patternIota, ServerLevel level) {
-            if (ALLOW_INVALID_PATTERNS) return patternIota;
+            if (HexCCConfig.ALLOW_INVALID_PATTERNS) return patternIota;
 
             for (HexAngle angle : ((PatternIota) patternIota).getPattern().getSignature())
                 if (angle == HexAngle.BACK) return new GarbageIota();

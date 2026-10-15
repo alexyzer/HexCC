@@ -17,4 +17,7 @@ dependencies {
 
     //HexCasting common
     modCompileOnly(files("libs/hexcasting-common-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
+
+    //Cloth Config common
+    modCompileOnly("me.shedaniel.cloth:cloth-config:$rootProject.cloth_config_version")
 }

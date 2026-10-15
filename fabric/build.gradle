@@ -37,6 +37,11 @@ dependencies {
     //HexCasting fabric
     modImplementation(files("libs/hexcasting-fabric-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
 
+    //Cloth Config fabric
+    modImplementation("me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
     //HexCasting dependencies
     modRuntimeOnly("at.petra-k:paucal:$rootProject.paucal_version+$rootProject.minecraft_version-fabric")
     modRuntimeOnly("vazkii.patchouli:Patchouli:1.21-$rootProject.patchouli_version-FABRIC-SNAPSHOT")
@@ -49,7 +54,7 @@ dependencies {
     //modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version") //Duplicate
 
     //Inline dependencies
-    modRuntimeOnly("me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version")
+    //modRuntimeOnly("me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version") //Duplicate
     modRuntimeOnly("dev.architectury:architectury-fabric:$architecturyVersion")
 
     //For SERVER_STARTING and SERVER_STOPPING hooks on fabric

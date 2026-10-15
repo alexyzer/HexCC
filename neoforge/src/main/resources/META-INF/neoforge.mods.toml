@@ -42,5 +42,12 @@ versionRange = "[1.113.0,)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.hexcc]]
+modId = "cloth_config"
+type = "required"
+versionRange = "[15.0.140,)"
+ordering = "NONE"
+side = "BOTH"
+
 [[mixins]]
 config = "hexcc.mixins.json"

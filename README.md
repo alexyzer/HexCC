@@ -9,6 +9,7 @@ ___
 Example code to cast spell from the [Focus](https://hexcasting.hexxy.media/v/0.11.4/1.0/en_us/?nospoiler#items/focus) in selected slot:
 ```
 staff = peripheral.find("staff")
+
 staff.cast("aqqqqq") --Scribe's Reflection
 staff.cast()         --Hermes' Gambit
 ```

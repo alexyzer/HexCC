@@ -1,13 +1,16 @@
 package alexyzer.hexcc.computer;
 
 import alexyzer.hexcc.HexCC;
+import alexyzer.hexcc.HexCCConfig;
 import alexyzer.hexcc.casting.IComputerBasedCastEnv;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
 import alexyzer.hexcc.util.LuaIota;
+import alexyzer.hexcc.util.StaffSaveComponent;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
+import at.petrak.hexcasting.api.casting.eval.vm.CastingImage;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
 import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.IotaType;
@@ -29,6 +32,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleSide;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,8 +42,10 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static alexyzer.hexcc.HexCCConfig.PERSIST_STATE;
 import static alexyzer.hexcc.HexCCConfig.REPLENISH_TICKS;
 import static alexyzer.hexcc.computer.StaffUpgrade.TYPE_STR;
 
@@ -48,12 +54,18 @@ public class StaffPeripheral implements IPeripheral {
     public CastingEnvironment env;
     public CastingVM vm;
     protected final Supplier<CastingEnvironment> envInitializer;
+    public final Supplier<DataComponentPatch> dataGetter;
+    public final Consumer<DataComponentPatch> dataSetter;
 
     public StaffPeripheral(ITurtleAccess turtle, TurtleSide side) {
+        dataGetter = () -> turtle.getUpgradeData(side);
+        dataSetter = data -> turtle.setUpgradeData(side, data);
         envInitializer = () -> new TurtleCastEnv(turtle);
     }
 
     public StaffPeripheral(IPocketAccess access) {
+        dataGetter = access::getUpgradeData;
+        dataSetter = access::setUpgradeData;
         envInitializer = () -> {
             var entity = access.getEntity();
             if (entity instanceof ServerPlayer) return new PlayerPocketCastEnv(access);
@@ -70,13 +82,32 @@ public class StaffPeripheral implements IPeripheral {
     @Override
     public void attach(@NotNull IComputerAccess computer) {
         //Init here
+
         env = envInitializer.get();
-        vm = CastingVM.empty(env);
+        if (PERSIST_STATE) {
+            var image = dataGetter.get().get(StaffSaveComponent.INSTANCE);
+            //noinspection DataFlowIssue
+            vm = new CastingVM(
+                    image.isPresent() ? image.get() : new CastingImage(),
+                    env
+            );
+        } else {
+            vm = CastingVM.empty(env);
+        }
     }
 
     @Override
     public void detach(@NotNull IComputerAccess computer) {
         //Unload here
+
+        if (HexCCConfig.PERSIST_STATE)
+            dataSetter.accept(
+                DataComponentPatch
+                    .builder()
+                    .set(StaffSaveComponent.INSTANCE, vm.getImage())
+                    .build()
+            );
+
         env = null;
         vm = null;
     }

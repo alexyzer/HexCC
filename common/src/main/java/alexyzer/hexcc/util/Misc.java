@@ -8,15 +8,20 @@ import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import dan200.computercraft.api.lua.LuaTable;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class Misc {
 
@@ -133,6 +138,24 @@ public class Misc {
             }
         } else {
             return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, string);
+        }
+    }
+
+    public static class NoOpStreamCodec<B, V> implements StreamCodec<B, V> {
+        public final V nullVal;
+
+        public NoOpStreamCodec(V nullVal) {
+            this.nullVal = nullVal;
+        }
+
+        @Override
+        public @NotNull V decode(B object) {
+            return nullVal;
+        }
+
+        @Override
+        public void encode(B object, V object2) {
+
         }
     }
 }

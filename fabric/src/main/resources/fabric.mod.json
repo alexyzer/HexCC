@@ -39,6 +39,6 @@
     "cloth_config": ">=15.0.140"
   },
   "suggests": {
-    "another-mod": "*"
+    "modmenu": "*"
   }
 }

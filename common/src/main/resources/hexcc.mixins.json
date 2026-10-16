@@ -6,6 +6,8 @@
   "client": [
   ],
   "mixins": [
+    "CircleOpMixins$OpImpetusDirMixin",
+    "CircleOpMixins$OpImpetusPosMixin"
   ],
   "injectors": {
     "defaultRequire": 1

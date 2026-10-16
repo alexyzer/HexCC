@@ -50,6 +50,9 @@ dependencies {
     forgeRuntimeLibrary "io.netty:netty-codec-socks:4.1.82.Final"
     forgeRuntimeLibrary "io.netty:netty-handler-proxy:4.1.82.Final"
 
+    //Cloth Config forge
+    modApi("me.shedaniel.cloth:cloth-config-neoforge:$rootProject.cloth_config_version")
+
     //HexCasting neoforge
     implementation(files("libs/hexcasting-neoforge-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
 

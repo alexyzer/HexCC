@@ -59,13 +59,16 @@ subprojects {
             url = 'https://maven.ladysnake.org/releases'
         }
 
-        //Mod Menu
+        //Mod Menu and Cloth Config
         repositories {
             maven {
                 name = "Terraformers"
                 url = "https://maven.terraformersmc.com/"
             }
         }
+
+        //Cloth config
+        maven { url "https://maven.shedaniel.me/" }
     }
 
     loom {

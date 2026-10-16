@@ -1,3 +1,6 @@
 {
-  "upgrade.hexcc.staff.adjective": "Casting"
+  "upgrade.hexcc.staff.adjective": "Casting",
+  "text.autoconfig.hexcc.option.ALLOW_UNKNOWN_IOTAS": "Allow Deserialization of Unknown Iota Types",
+  "text.autoconfig.hexcc.option.ALLOW_PLAYER_DESERIALIZATION": "Allow Deserialization of Player Iotas",
+  "text.autoconfig.hexcc.option.ALLOW_INVALID_PATTERNS": "Allow Deserialization of Invalid Pattern Iotas"
 }

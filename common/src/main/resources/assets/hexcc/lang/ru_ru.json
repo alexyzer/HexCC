@@ -2,5 +2,6 @@
   "upgrade.hexcc.staff.adjective": "Заклинающий",
   "text.autoconfig.hexcc.option.ALLOW_UNKNOWN_IOTAS": "Разрешить десериализацию неизвестных типов йот",
   "text.autoconfig.hexcc.option.ALLOW_PLAYER_DESERIALIZATION": "Разрешить десериализацию йот игроков",
-  "text.autoconfig.hexcc.option.ALLOW_INVALID_PATTERNS": "Разрешить десериализацию некорректных йот рун"
+  "text.autoconfig.hexcc.option.ALLOW_INVALID_PATTERNS": "Разрешить десериализацию некорректных йот рун",
+  "text.autoconfig.hexcc.option.REPLENISH_TICKS": "Время в тиках до возобновления лимита исполнения посоха"
 }

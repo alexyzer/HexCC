@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import static alexyzer.hexcc.HexCCConfig.REPLENISH_TICKS;
 import static alexyzer.hexcc.computer.StaffUpgrade.TYPE_STR;
 
 public class StaffPeripheral implements IPeripheral {
@@ -84,9 +85,6 @@ public class StaffPeripheral implements IPeripheral {
     public boolean equals(@Nullable IPeripheral other) {
         return this == other;
     }
-
-    //TODO add config
-    final int REPLENISH_TICKS = 200;
 
     public boolean needsUpdate = false;
 

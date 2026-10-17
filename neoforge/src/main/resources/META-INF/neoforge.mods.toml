@@ -45,7 +45,7 @@ side = "BOTH"
 [[dependencies.hexcc]]
 modId = "cloth_config"
 type = "required"
-versionRange = "[15.0.140,)"
+versionRange = "[15.0.130,)"
 ordering = "NONE"
 side = "BOTH"
 

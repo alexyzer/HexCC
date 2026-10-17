@@ -34,7 +34,7 @@
     "minecraft": "~1.21.1",
     "java": ">=21",
     "hexcasting": ">=0.12.0-devel-pre-35",
-    "computercraft": ">=1.113.0",
+    "computercraft": "*",
     "cloth_config": "*"
   },
   "suggests": {

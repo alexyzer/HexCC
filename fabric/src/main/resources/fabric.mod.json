@@ -29,8 +29,8 @@
     "hexcc.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.19.5",
-    "fabric": ">=0.116.17",
+    "fabricloader": "*",
+    "fabric": "*",
     "minecraft": "~1.21.1",
     "java": ">=21",
     "hexcasting": ">=0.12.0-devel-pre-35",

@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
+import com.google.common.collect.ImmutableMap;
 import dan200.computercraft.api.lua.LuaTable;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -158,4 +159,6 @@ public class Misc {
 
         }
     }
+
+    public static ImmutableMap<String, String> ENGLISH_MISHAPS;
 }

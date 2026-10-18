@@ -1,6 +1,6 @@
 package alexyzer.hexcc.mixin;
 
-import alexyzer.hexcc.util.Misc;
+import alexyzer.hexcc.client.LanguageWorkaround;
 import com.google.common.collect.ImmutableMap;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
@@ -67,7 +67,7 @@ public abstract class ClientLanguageMixin {
                 if (k.startsWith("hexcasting.mishap"))
                     snapshot.put(k, v);
             });
-            Misc.ENGLISH_MISHAPS = new ClientLanguage(snapshot.build(), false);
+            LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot.build(), false);
         }
     }
 }

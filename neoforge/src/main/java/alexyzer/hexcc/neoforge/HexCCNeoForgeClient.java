@@ -11,6 +11,9 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 @Mod(value = HexCC.MOD_ID, dist = Dist.CLIENT)
 public class HexCCNeoForgeClient {
     public HexCCNeoForgeClient(ModContainer container) {
+
+        HexCC.onClientSetup();
+
         //Use AutoConfig generated Screen
         container.registerExtensionPoint(IConfigScreenFactory.class,
                 (modContainer, parent) -> AutoConfig.getConfigScreen(HexCCConfig.class, parent).get());

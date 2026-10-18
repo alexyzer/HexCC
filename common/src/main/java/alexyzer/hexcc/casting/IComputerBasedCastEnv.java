@@ -35,7 +35,7 @@ public interface IComputerBasedCastEnv {
         if (mishap != null) {
             try {
                 throw new LuaException(
-                    Misc.getEnglishMishapMessage(env, mishap.getMishap(), mishap.getErrorCtx())
+                    Misc.getEnglishMishapMessage.apply(env, mishap.getMishap(), mishap.getErrorCtx())
                 );
             } finally {
                 clearMishap();

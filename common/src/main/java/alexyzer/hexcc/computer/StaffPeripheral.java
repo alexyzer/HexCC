@@ -238,6 +238,6 @@ public class StaffPeripheral implements IPeripheral {
         var ctx = new Mishap.Context(null, null);
         vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, ctx)));
 
-        throw new LuaException(Misc.getEnglishMishapMessage(env, mishap, ctx));
+        throw new LuaException(Misc.getEnglishMishapMessage.apply(env, mishap, ctx));
     }
 }

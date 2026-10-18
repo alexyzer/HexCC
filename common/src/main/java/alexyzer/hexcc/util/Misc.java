@@ -9,7 +9,6 @@ import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import dan200.computercraft.api.lua.LuaTable;
-import net.minecraft.locale.Language;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -161,23 +161,8 @@ public class Misc {
         }
     }
 
-    public static Language ENGLISH_MISHAPS;
-
-    static final Object LANGUAGE_LOCK = new Object();
-
-    public static @Nullable String getEnglishMishapMessage(CastingEnvironment env, Mishap mishap, Mishap.Context ctx) {
-        var component = mishap.errorMessageWithName(env, ctx);
-        if (component == null) return null;
-
-        //Language.instance is volatile, yet this function may be used asynchronously in a computer thread
-        synchronized (LANGUAGE_LOCK) {
-            var original = Language.getInstance();
-            try {
-                Language.inject(Misc.ENGLISH_MISHAPS);
-                return component.getString();
-            } finally {
-                Language.inject(original);
-            }
-        }
-    }
+    @SuppressWarnings("DataFlowIssue")
+    public static TriFunction<CastingEnvironment, Mishap, Mishap.Context, @Nullable String> getEnglishMishapMessage =
+            //Default value
+            (env, mishap, ctx) -> mishap.errorMessageWithName(env, ctx).getString();
 }

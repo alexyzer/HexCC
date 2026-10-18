@@ -1,6 +1,8 @@
 package alexyzer.hexcc;
 
+import alexyzer.hexcc.client.LanguageWorkaround;
 import alexyzer.hexcc.util.IotaPermit;
+import alexyzer.hexcc.util.Misc;
 import com.mojang.logging.LogUtils;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
@@ -15,6 +17,10 @@ public final class HexCC {
     public static void onCommonSetup() {
         AutoConfig.register(HexCCConfig.class, Toml4jConfigSerializer::new);
         IotaPermit.BuiltInValidators.register();
+    }
+
+    public static void onClientSetup() {
+        Misc.getEnglishMishapMessage = LanguageWorkaround::getEnglishMishapMessage;
     }
 
     public static void onReloadAsync(ResourceManager resourceManager) {

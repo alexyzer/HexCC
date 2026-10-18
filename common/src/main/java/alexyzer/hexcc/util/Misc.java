@@ -2,13 +2,14 @@ package alexyzer.hexcc.util;
 
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.addldata.ADMediaHolder;
+import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.env.PlayerBasedCastEnv;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
-import com.google.common.collect.ImmutableMap;
 import dan200.computercraft.api.lua.LuaTable;
+import net.minecraft.locale.Language;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -160,5 +161,23 @@ public class Misc {
         }
     }
 
-    public static ImmutableMap<String, String> ENGLISH_MISHAPS;
+    public static Language ENGLISH_MISHAPS;
+
+    static final Object LANGUAGE_LOCK = new Object();
+
+    public static @Nullable String getEnglishMishapMessage(CastingEnvironment env, Mishap mishap, Mishap.Context ctx) {
+        var component = mishap.errorMessageWithName(env, ctx);
+        if (component == null) return null;
+
+        //Language.instance is volatile, yet this function may be used asynchronously in a computer thread
+        synchronized (LANGUAGE_LOCK) {
+            var original = Language.getInstance();
+            try {
+                Language.inject(Misc.ENGLISH_MISHAPS);
+                return component.getString();
+            } finally {
+                Language.inject(original);
+            }
+        }
+    }
 }

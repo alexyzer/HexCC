@@ -33,11 +33,14 @@ public interface IComputerBasedCastEnv {
     default void throwIfMishapped(CastingEnvironment env) throws LuaException {
         var mishap = getLastMishap();
         if (mishap != null) {
-            var mishapComponent = mishap.getMishap().errorMessageWithName(env, mishap.getErrorCtx());
-            var mishapStr = mishapComponent != null ? mishapComponent.getString() : mishap.getMishap().getMessage();
-            clearMishap();
-            getRevealBuffer().clear();
-            throw new LuaException(mishapStr);
+            try {
+                throw new LuaException(
+                    Misc.getEnglishMishapMessage(env, mishap.getMishap(), mishap.getErrorCtx())
+                );
+            } finally {
+                clearMishap();
+                getRevealBuffer().clear();
+            }
         }
     }
 

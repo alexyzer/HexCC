@@ -7,6 +7,7 @@ import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
 import alexyzer.hexcc.util.LuaIota;
+import alexyzer.hexcc.util.Misc;
 import alexyzer.hexcc.util.StaffSaveComponent;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
@@ -233,8 +234,10 @@ public class StaffPeripheral implements IPeripheral {
 
     public void doMishap(Mishap mishap) throws LuaException {
         needsUpdate = true;
+
         var ctx = new Mishap.Context(null, null);
         vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, ctx)));
-        throw new LuaException(mishap.errorMessageWithName(env, ctx).getString());
+
+        throw new LuaException(Misc.getEnglishMishapMessage(env, mishap, ctx));
     }
 }

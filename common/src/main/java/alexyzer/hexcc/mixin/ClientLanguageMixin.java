@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("MissingOrInvalidOpcode")
 @Mixin(ClientLanguage.class)
 public abstract class ClientLanguageMixin {
 
@@ -68,7 +67,7 @@ public abstract class ClientLanguageMixin {
                 if (k.startsWith("hexcasting.mishap"))
                     snapshot.put(k, v);
             });
-            Misc.ENGLISH_MISHAPS = snapshot.build();
+            Misc.ENGLISH_MISHAPS = new ClientLanguage(snapshot.build(), false);
         }
     }
 }

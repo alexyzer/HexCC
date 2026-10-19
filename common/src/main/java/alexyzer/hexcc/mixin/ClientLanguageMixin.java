@@ -2,6 +2,7 @@ package alexyzer.hexcc.mixin;
 
 import alexyzer.hexcc.client.LanguageWorkaround;
 import alexyzer.hexcc.util.CompactLookup;
+import alexyzer.hexcc.util.Misc;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -61,9 +62,18 @@ public abstract class ClientLanguageMixin {
             @Local(ordinal = 0) Map<String, String> translations,
             @Local(ordinal = 0) String language
     ) {
+        //First iteration
         if (language.equals("en_us")) {
-            var snapshot = new CompactLookup.Map<>(translations);
-            LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
+            //If the client language is not just English, use the workaround
+            if (list.size() != 1) {
+                if (LanguageWorkaround.ENGLISH_MISHAPS == null) {
+                    var snapshot = new CompactLookup.Map<>(translations);
+                    LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
+                }
+                Misc.getEnglishMishapMessage = LanguageWorkaround::getEnglishMishapMessage;
+            } else {
+                Misc.getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
+            }
         }
     }
 }

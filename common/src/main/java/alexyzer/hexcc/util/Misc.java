@@ -161,8 +161,10 @@ public class Misc {
         }
     }
 
-    @SuppressWarnings("DataFlowIssue")
-    public static TriFunction<CastingEnvironment, Mishap, Mishap.Context, @Nullable String> getEnglishMishapMessage =
-            //Default value
-            (env, mishap, ctx) -> mishap.errorMessageWithName(env, ctx).getString();
+    public static @Nullable String DEFAULT_GET_ENGLISH_MISHAP_FUNC(CastingEnvironment env, Mishap mishap, Mishap.Context ctx) {
+        var msg = mishap.errorMessageWithName(env, ctx);
+        return msg != null ? msg.getString() : null;
+    }
+
+    public static TriFunction<CastingEnvironment, Mishap, Mishap.Context, @Nullable String> getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
 }

@@ -1,7 +1,7 @@
 package alexyzer.hexcc.mixin;
 
 import alexyzer.hexcc.client.LanguageWorkaround;
-import com.google.common.collect.ImmutableMap;
+import alexyzer.hexcc.util.CompactLookup;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("MissingOrInvalidOpcode")
 @Mixin(ClientLanguage.class)
 public abstract class ClientLanguageMixin {
 
@@ -61,13 +62,8 @@ public abstract class ClientLanguageMixin {
             @Local(ordinal = 0) String language
     ) {
         if (language.equals("en_us")) {
-            var snapshot = ImmutableMap.<String, String>builder();
-            translations.forEach((k, v) -> {
-                //No need for other translations
-                if (k.startsWith("hexcasting.mishap"))
-                    snapshot.put(k, v);
-            });
-            LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot.build(), false);
+            var snapshot = new CompactLookup.Map<>(translations);
+            LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
         }
     }
 }

@@ -151,7 +151,7 @@ public class StaffPeripheral implements IPeripheral {
     //Lua
 
     @LuaFunction(value = "cast", mainThread = true)
-    public final Object lua$cast(IArguments args) throws LuaException {
+    public final MethodResult lua$cast(IArguments args) throws LuaException {
         //This doesn't need additional blocking
         return cast(switch (args.count()) {
             case 0 -> new PatternIota(HexActions.EVAL.value().prototype());
@@ -171,10 +171,11 @@ public class StaffPeripheral implements IPeripheral {
 
     @LuaFunction("pushStack")
     public final void lua$pushStack(IArguments args, ILuaContext lua) throws LuaException {
+        var iotas = args.getAll();
         doMainThreadTask(() -> {
             setStack(
                 getStack().appendedAll(
-                    LuaIota.parseArgs(env.getWorld(), args.getAll())
+                    LuaIota.parseArgs(env.getWorld(), iotas)
             ), lua);
 
             return null;
@@ -223,7 +224,7 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("getRavenmind")
     public final MethodResult lua$getRavenmind() throws LuaException {
         return waitChanges(() -> MethodResult.of(
-            vm.getImage().ravenmind().map(LuaIota::toLua)
+                vm.getImage().ravenmind().map(LuaIota::toLua).orElse(null)
         ));
     }
 

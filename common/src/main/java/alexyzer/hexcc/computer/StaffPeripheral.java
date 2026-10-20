@@ -145,7 +145,7 @@ public class StaffPeripheral implements IPeripheral {
 
     @LuaFunction(value = "cast", mainThread = true)
     public final Object lua$cast(IArguments args) throws LuaException {
-        //This doesn't need additional waiting
+        //This doesn't need additional blocking
         return cast(switch (args.count()) {
             case 0 -> new PatternIota(HexActions.EVAL.value().prototype());
             case 1 -> {
@@ -163,15 +163,15 @@ public class StaffPeripheral implements IPeripheral {
     }
 
     @LuaFunction("pushStack")
-    public final MethodResult lua$pushStack(IArguments args, ILuaContext lua) throws LuaException {
-        return waitChanges(() -> {
+    public final void lua$pushStack(IArguments args, ILuaContext lua) throws LuaException {
+        doMainThreadTask(() -> {
             setStack(
                 getStack().appendedAll(
                     LuaIota.parseArgs(env.getWorld(), args.getAll())
-                ), lua
-            );
-            return MethodResult.of();
-        });
+            ), lua);
+
+            return null;
+        }, lua);
     }
 
     @LuaFunction("popStack")
@@ -199,9 +199,8 @@ public class StaffPeripheral implements IPeripheral {
     }
 
     @LuaFunction("setStack")
-    public final MethodResult lua$setStack(Map<?, ?> luaIotasSeq, ILuaContext lua) throws LuaException {
-        return waitChanges(() -> {
-
+    public final void lua$setStack(Map<?, ?> luaIotasSeq, ILuaContext lua) throws LuaException {
+        doMainThreadTask(() -> {
             var stack = new TreeList.TreeListBuilder<Iota>();
             for (double i = 1.0; i <= luaIotasSeq.size(); i++) {
                 var luaIota = luaIotasSeq.get(i);
@@ -210,14 +209,13 @@ public class StaffPeripheral implements IPeripheral {
             }
             setStack(stack.result(), lua);
 
-            return MethodResult.of();
-        });
+            return null;
+        }, lua);
     }
 
     @LuaFunction("clear")
-    public final MethodResult lua$clear() throws LuaException {
-        return waitChanges(() -> {
-
+    public final void lua$clear(ILuaContext lua) throws LuaException {
+        doMainThreadTask(() -> {
             var image = vm.getImage();
             image = image.copy(
                     TreeList.empty(), //clear stack
@@ -230,8 +228,8 @@ public class StaffPeripheral implements IPeripheral {
             );
             vm.setImage(image);
 
-            return MethodResult.of();
-        });
+            return null;
+        }, lua);
     }
 
 
@@ -268,29 +266,24 @@ public class StaffPeripheral implements IPeripheral {
 
     static Mishap.Context NULL_MISHAP_CTX = new Mishap.Context(null, null);
     public void doMishap(Mishap mishap, ILuaContext lua) throws LuaException {
+        //Send out a task to perform side effects
+        doMainThreadTask(() -> {
+            vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, NULL_MISHAP_CTX)));
+            return null;
+        }, lua);
 
-        needsWait = true;
-        try {
-            lua.issueMainThreadTask(() -> {
-                try {
-                    vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, NULL_MISHAP_CTX)));
-                } finally {
-                    needsWait = false;
-                }
-                return new Object[0];
-            });
-        } catch (Exception e) {
-            needsWait = false;
-            throw e;
-        }
-
+        //Throw error meanwhile
         throw new LuaException(
             //Getting a message is expected to be thread safe
             Misc.getEnglishMishapMessage.apply(env, mishap, NULL_MISHAP_CTX)
         );
     }
 
+
+    //Lua partial execution blocking implementation
+
     protected volatile boolean needsWait = false;
+
     /**
      * Yields if some method has unresolved main thread changes, else runs {@code then}.<p>
      * Used to make method usage more responsive while also addressing race conditions.
@@ -305,6 +298,32 @@ public class StaffPeripheral implements IPeripheral {
             throw luaException;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Helper wrapper method that adds {@code needsWait} handling and enqueues {@code task} on main thread.<p>
+     * Useful for methods that don't need the result of {@code task}.
+     * @param task task to execute on main thread.
+     */
+    public void doMainThreadTask(Callable<Void> task, ILuaContext lua) throws LuaException {
+        needsWait = true;
+        try {
+            lua.issueMainThreadTask(() -> {
+                try {
+                    task.call();
+                } catch (LuaException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    needsWait = false;
+                }
+                return new Object[0];
+            });
+        } catch (Exception e) {
+            needsWait = false;
+            throw e;
         }
     }
 }

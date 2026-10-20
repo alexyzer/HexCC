@@ -92,9 +92,8 @@ public class StaffPeripheral implements IPeripheral {
         env = envInitializer.get();
         if (PERSIST_STATE) {
             var image = dataGetter.get().get(StaffSaveComponent.INSTANCE);
-            //noinspection DataFlowIssue
             vm = new CastingVM(
-                    image.isPresent() ? image.get() : new CastingImage(),
+                    image != null && image.isPresent() ? image.get() : new CastingImage(),
                     env
             );
         } else {

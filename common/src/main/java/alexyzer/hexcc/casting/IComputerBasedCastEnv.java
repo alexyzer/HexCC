@@ -2,9 +2,7 @@ package alexyzer.hexcc.casting;
 
 import alexyzer.hexcc.util.Misc;
 import at.petrak.hexcasting.api.casting.eval.CastResult;
-import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
-import dan200.computercraft.api.lua.LuaException;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,20 +27,6 @@ public interface IComputerBasedCastEnv {
     }
 
     void clearMishap();
-
-    default void throwIfMishapped(CastingEnvironment env) throws LuaException {
-        var mishap = getLastMishap();
-        if (mishap != null) {
-            try {
-                throw new LuaException(
-                    Misc.getEnglishMishapMessage.apply(env, mishap.getMishap(), mishap.getErrorCtx())
-                );
-            } finally {
-                clearMishap();
-                getRevealBuffer().clear();
-            }
-        }
-    }
 
     default List<String> dumpRevealBuffer() {
         return getRevealBuffer().dump();

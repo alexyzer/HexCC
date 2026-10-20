@@ -5,5 +5,6 @@
   "text.autoconfig.hexcc.option.ALLOW_INVALID_PATTERNS": "Allow Deserialization of Invalid Pattern Iotas",
   "text.autoconfig.hexcc.option.PERSIST_STATE": "Persist Staff Peripheral State after Shutdown",
   "text.autoconfig.hexcc.option.REPLENISH_TICKS": "Time in Ticks to Fully Replenish Staff Evaluation Limit",
-  "text.autoconfig.hexcc.option.MAX_CASTS_PER_TICK": "Number of cast() Calls Allowed per Tick"
+  "text.autoconfig.hexcc.option.MAX_CASTS_PER_TICK": "Number of cast() Calls Allowed per Tick",
+  "text.autoconfig.hexcc.option.STUMBLE_ON_MISHAP": "Exhaust cast() Call Limit on Mishap"
 }

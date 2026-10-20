@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -137,7 +138,7 @@ public class StaffPeripheral implements IPeripheral {
             if (ops_consumed > 0) needsUpdate = true; //Update until 0
 
             //Reset cast() call limit
-            cast$remaining = HexCCConfig.MAX_CASTS_PER_TICK;
+            cast$remaining.set(HexCCConfig.MAX_CASTS_PER_TICK);
 
             image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getUserData());
             vm.setImage(image);
@@ -239,12 +240,15 @@ public class StaffPeripheral implements IPeripheral {
 
     //Helpers
 
-    public int cast$remaining = HexCCConfig.MAX_CASTS_PER_TICK;
+    public final AtomicInteger cast$remaining = new AtomicInteger(HexCCConfig.MAX_CASTS_PER_TICK);
     public MethodResult cast(Iota iota) throws LuaException {
 
-        if (cast$remaining <= 0)
-            return MethodResult.yield(null, (ignored) -> cast(iota));
-        cast$remaining--;
+        synchronized (cast$remaining) {
+            if (cast$remaining.get() <= 0)
+                return MethodResult.yield(null, (ignored) -> cast(iota));
+            //No need to use atomic operation other than brevity
+            cast$remaining.decrementAndGet();
+        }
 
         needsUpdate = true;
         var level = env.getWorld();
@@ -255,12 +259,27 @@ public class StaffPeripheral implements IPeripheral {
             vm.queueExecuteAndWrapIota(iota, level);
 
         if (env instanceof IComputerBasedCastEnv attachment) {
-            attachment.throwIfMishapped(env);
+            var mishap = attachment.getLastMishap();
+            if (mishap != null) {
+                cast$exhaust();
+                try {
+                    throw new LuaException(
+                        Misc.getEnglishMishapMessage.apply(env, mishap.getMishap(), mishap.getErrorCtx()));
+                } finally {
+                    attachment.clearMishap();
+                    attachment.getRevealBuffer().clear();
+                }
+            }
             return MethodResult.of(attachment.dumpRevealBuffer().toArray());
         }
 
         HexCC.LOGGER.warn("Used cast() in environment without IComputerBasedCastEnv attachment.");
         return MethodResult.of("Used cast() in environment without IComputerBasedCastEnv attachment.");
+    }
+
+    public void cast$exhaust() {
+        //Exhaust cast() limit on mishap
+        if (HexCCConfig.STUMBLE_ON_MISHAP) cast$remaining.set(0);
     }
 
     public TreeList<Iota> getStack() {
@@ -276,6 +295,9 @@ public class StaffPeripheral implements IPeripheral {
 
     static Mishap.Context NULL_MISHAP_CTX = new Mishap.Context(null, null);
     public void doMishap(Mishap mishap, ILuaContext lua) throws LuaException {
+
+        cast$exhaust();
+
         //Send out a task to perform side effects
         doMainThreadTask(() -> {
             vm.performSideEffects(List.of(new OperatorSideEffect.DoMishap(mishap, NULL_MISHAP_CTX)));

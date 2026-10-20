@@ -9,6 +9,7 @@ import alexyzer.hexcc.casting.TurtleCastEnv;
 import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.util.Misc;
 import alexyzer.hexcc.util.StaffSaveComponent;
+import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingImage;
@@ -32,6 +33,7 @@ import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleSide;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -218,6 +220,21 @@ public class StaffPeripheral implements IPeripheral {
         }, lua);
     }
 
+    @LuaFunction("getRavenmind")
+    public final MethodResult lua$getRavenmind() throws LuaException {
+        return waitChanges(() -> MethodResult.of(
+            vm.getImage().ravenmind().map(LuaIota::toLua)
+        ));
+    }
+
+    @LuaFunction("setRavenmind")
+    public final void lua$setRavenmind(Object iota, ILuaContext lua) throws LuaException {
+        doMainThreadTask(() -> {
+            setRavenmind(LuaIota.fromLua(iota, env.getWorld()));
+            return null;
+        }, lua);
+    }
+
     @LuaFunction("clear")
     public final void lua$clear(ILuaContext lua) throws LuaException {
         doMainThreadTask(() -> {
@@ -291,6 +308,12 @@ public class StaffPeripheral implements IPeripheral {
         if (IotaType.isTooLargeToSerialize(newStack)) doMishap(new MishapStackSize(), lua);
         image = image.copy(newStack, image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), image.getOpsConsumed(), image.getUserData());
         vm.setImage(image);
+    }
+
+    public void setRavenmind(Iota ravenmind) {
+        vm.getImage().getUserData()
+                .put(HexAPI.RAVENMIND_USERDATA,
+                        IotaType.TYPED_CODEC.encode(ravenmind, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
     }
 
     static Mishap.Context NULL_MISHAP_CTX = new Mishap.Context(null, null);

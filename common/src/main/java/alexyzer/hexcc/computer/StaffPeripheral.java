@@ -137,7 +137,7 @@ public class StaffPeripheral implements IPeripheral {
             if (ops_consumed > 0) needsUpdate = true; //Update until 0
 
             //Reset cast() call limit
-            timesCast = 0;
+            cast$remaining = HexCCConfig.MAX_CASTS_PER_TICK;
 
             image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getUserData());
             vm.setImage(image);
@@ -239,13 +239,12 @@ public class StaffPeripheral implements IPeripheral {
 
     //Helpers
 
-    public int timesCast = 0;
-
+    public int cast$remaining = HexCCConfig.MAX_CASTS_PER_TICK;
     public MethodResult cast(Iota iota) throws LuaException {
 
-        if (timesCast > HexCCConfig.MAX_CASTS_PER_TICK)
+        if (cast$remaining <= 0)
             return MethodResult.yield(null, (ignored) -> cast(iota));
-        timesCast++;
+        cast$remaining--;
 
         needsUpdate = true;
         var level = env.getWorld();

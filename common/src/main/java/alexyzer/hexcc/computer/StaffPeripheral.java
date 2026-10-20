@@ -136,6 +136,9 @@ public class StaffPeripheral implements IPeripheral {
             var ops_consumed = Math.max(image.getOpsConsumed() - replenish_rate, 0);
             if (ops_consumed > 0) needsUpdate = true; //Update until 0
 
+            //Reset cast() call limit
+            timesCast = 0;
+
             image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getUserData());
             vm.setImage(image);
         }
@@ -236,7 +239,14 @@ public class StaffPeripheral implements IPeripheral {
 
     //Helpers
 
-    public Object cast(Iota iota) throws LuaException {
+    public int timesCast = 0;
+
+    public MethodResult cast(Iota iota) throws LuaException {
+
+        if (timesCast > HexCCConfig.MAX_CASTS_PER_TICK)
+            return MethodResult.yield(null, (ignored) -> cast(iota));
+        timesCast++;
+
         needsUpdate = true;
         var level = env.getWorld();
 
@@ -247,11 +257,11 @@ public class StaffPeripheral implements IPeripheral {
 
         if (env instanceof IComputerBasedCastEnv attachment) {
             attachment.throwIfMishapped(env);
-            return attachment.dumpRevealBuffer().toArray();
+            return MethodResult.of(attachment.dumpRevealBuffer().toArray());
         }
 
         HexCC.LOGGER.warn("Used cast() in environment without IComputerBasedCastEnv attachment.");
-        return "Used cast() in environment without IComputerBasedCastEnv attachment.";
+        return MethodResult.of("Used cast() in environment without IComputerBasedCastEnv attachment.");
     }
 
     public TreeList<Iota> getStack() {

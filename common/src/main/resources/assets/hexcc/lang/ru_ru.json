@@ -4,5 +4,6 @@
   "text.autoconfig.hexcc.option.ALLOW_PLAYER_DESERIALIZATION": "Разрешить десериализацию йот игроков",
   "text.autoconfig.hexcc.option.ALLOW_INVALID_PATTERNS": "Разрешить десериализацию некорректных йот рун",
   "text.autoconfig.hexcc.option.PERSIST_STATE": "Сохранять состояние переферии посоха после выключения",
-  "text.autoconfig.hexcc.option.REPLENISH_TICKS": "Время в тиках до возобновления лимита исполнения посоха"
+  "text.autoconfig.hexcc.option.REPLENISH_TICKS": "Время в тиках до возобновления лимита исполнения посоха",
+  "text.autoconfig.hexcc.option.MAX_CASTS_PER_TICK": "Разрешённое количество вызовов cast() в тик"
 }

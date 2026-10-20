@@ -3,19 +3,17 @@ package alexyzer.hexcc.mixin;
 import alexyzer.hexcc.client.LanguageWorkaround;
 import alexyzer.hexcc.util.CompactLookup;
 import alexyzer.hexcc.util.Misc;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
-import net.minecraft.server.packs.resources.ResourceManager;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("MissingOrInvalidOpcode")
 @Mixin(ClientLanguage.class)
 public abstract class ClientLanguageMixin {
 
@@ -25,47 +23,46 @@ public abstract class ClientLanguageMixin {
     public static ClientLanguage loadFrom(ResourceManager resourceManager, List<String> list, boolean bl) {
         Map<String, String> map = Maps.newHashMap();
 
-        L5: for (String string : list) {
+        for(String string : list) {
             String string2 = String.format(Locale.ROOT, "lang/%s.json", string);
 
-            L9: for (String string3 : resourceManager.getNamespaces()) {
+          * Iterator<String> instance = getNamespaces().iterator();
+          * while (wrapIterator(instance, Iterator::hasNext)) {
+          *     String string3 = instance.next()
                 try {
                     ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(string3, string2);
                     appendFrom(string, resourceManager.getResourceStack(resourceLocation), map);
-                    <GOTO L12> //0
                 } catch (Exception exception) {
                     LOGGER.warn("Skipped language file: {}:{} ({})", new Object[]{string3, string2, exception.toString()});
                 }
-                L12:
-                <GOTO L9> //1
             }
-        //INJECTING HERE
-        <GOTO L5> //2
         }
 
         return new ClientLanguage(ImmutableMap.copyOf(map), bl);
     }
     */
 
-    @Inject(
+    @WrapOperation(
             method = "loadFrom",
             at = @At(
-                    value = "JUMP",
-                    opcode = Opcodes.GOTO,
-                    ordinal = 2
+                    value = "INVOKE",
+                    target = "Ljava/util/Iterator;hasNext()Z",
+                    ordinal = 1 //Inner loop
             )
     )
-    @SuppressWarnings("UnresolvedLocalCapture") //Resolving at runtime
-    private static void loadFrom(
-            ResourceManager resourceManager, List<String> list, boolean bl, CallbackInfoReturnable<ClientLanguage> cir,
-            //Find fist locals of that type, ignore rest
+    @SuppressWarnings("LocalMayUseName") //No it can't
+    private static boolean wrapIterator(
+            Iterator<String> instance, Operation<Boolean> original,
+            @Local(name = "list") List<String> languages,
+            //Using ordinal to combat differing mappings on different architectures
             @Local(ordinal = 0) Map<String, String> translations,
             @Local(ordinal = 0) String language
     ) {
-        //First iteration
-        if (language.equals("en_us")) {
+        var hasNext = original.call(instance);
+        //After end of inner iterator
+        if (!hasNext && language.equals("en_us")) {
             //If the client language is not just English, use the workaround
-            if (list.size() != 1) {
+            if (languages.size() != 1) {
                 if (LanguageWorkaround.ENGLISH_MISHAPS == null) {
                     var snapshot = new CompactLookup.Map<>(translations);
                     LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
@@ -75,5 +72,6 @@ public abstract class ClientLanguageMixin {
                 Misc.getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
             }
         }
+        return hasNext;
     }
 }

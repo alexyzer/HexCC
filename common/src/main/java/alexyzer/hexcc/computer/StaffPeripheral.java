@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -282,7 +283,7 @@ public class StaffPeripheral implements IPeripheral {
 
     //Lua partial execution blocking implementation
 
-    protected volatile boolean needsWait = false;
+    protected final AtomicBoolean needsWait = new AtomicBoolean(false);
 
     /**
      * Yields if some method has unresolved main thread changes, else runs {@code then}.<p>
@@ -291,13 +292,17 @@ public class StaffPeripheral implements IPeripheral {
      * @return result of {@code then} or {@linkplain MethodResult#yield}.
      */
     public MethodResult waitChanges(Callable<MethodResult> then) throws LuaException {
-        if (needsWait) return MethodResult.yield(null, ignored -> this.waitChanges(then));
-        try {
-            return then.call();
-        } catch (LuaException luaException) {
-            throw luaException;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        synchronized (needsWait) {
+            if (needsWait.get())
+                return MethodResult.yield(null, ignored -> this.waitChanges(then));
+
+            try {
+                return then.call();
+            } catch (LuaException luaException) {
+                throw luaException;
+            } catch (Exception unreachable) {
+                throw new RuntimeException(unreachable);
+            }
         }
     }
 
@@ -307,23 +312,20 @@ public class StaffPeripheral implements IPeripheral {
      * @param task task to execute on main thread.
      */
     public void doMainThreadTask(Callable<Void> task, ILuaContext lua) throws LuaException {
-        needsWait = true;
-        try {
+        synchronized (needsWait) {
             lua.issueMainThreadTask(() -> {
                 try {
                     task.call();
                 } catch (LuaException e) {
                     throw e;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                } catch (Exception unreachable) {
+                    throw new RuntimeException(unreachable);
                 } finally {
-                    needsWait = false;
+                    needsWait.set(false);
                 }
                 return new Object[0];
             });
-        } catch (Exception e) {
-            needsWait = false;
-            throw e;
+            needsWait.set(true);
         }
     }
 }

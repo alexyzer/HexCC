@@ -25,4 +25,4 @@ ___
 - Complete `staff` peripheral functionality.
 - Behaviour configs.
 - Data-driven system of allowing/disallowing certain iotas crossing Lua -> HexCasting boundary.
-- Iota-specific validation system extensible through Java-side HexCCAPI. This feature is raw and may change in later builds.
+- Iota-specific validation system extensible through Java-side HexCCAPI. This feature may change in later builds.

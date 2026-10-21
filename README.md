@@ -15,7 +15,6 @@ staff.cast()         --Hermes' Gambit
 ```
 ___
 
-### The mod is currently in beta!
 Following "Extra" features are planned, some with config toggle.
 - Fake player implementation for Turtle Casting Environment.
 - Mishaps affecting the executing computer (fuel drainage, shutdowns, block breaking).
@@ -23,6 +22,7 @@ Following "Extra" features are planned, some with config toggle.
 - Utility library "hexlib", packaging convenient and extra features using this API.
 ___
 ### Currently implemented:
-- `staff` peripheral functionality. State does not yet save on reload.
+- Complete `staff` peripheral functionality.
+- Behaviour configs.
 - Data-driven system of allowing/disallowing certain iotas crossing Lua -> HexCasting boundary.
 - Iota-specific validation system extensible through Java-side HexCCAPI. This feature is raw and may change in later builds.

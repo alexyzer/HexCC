@@ -33,7 +33,7 @@
     "fabric": "*",
     "minecraft": "~1.21.1",
     "java": ">=21",
-    "hexcasting": ">=0.12.0-devel-pre-35",
+    "hexcasting": ">=0.12.0-devel-pre-64",
     "computercraft": "*",
     "cloth-config": "*"
   },

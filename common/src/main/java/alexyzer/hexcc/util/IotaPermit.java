@@ -97,7 +97,7 @@ public class IotaPermit {
             var valid = EntityIota.TYPE.validate(((EntityIota) entityIota), level);
             if (!valid) return new NullIota();
 
-            if (!HexCCConfig.ALLOW_PLAYER_DESERIALIZATION && ((EntityIota) entityIota).isPlayer()) return new GarbageIota();
+            if (!HexCCConfig.ALLOW_PLAYER_DESERIALIZATION && ((EntityIota) entityIota).uuidIsPlayer()) return new GarbageIota();
 
             return entityIota;
         }

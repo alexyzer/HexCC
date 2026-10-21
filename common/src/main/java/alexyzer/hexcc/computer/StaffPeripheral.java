@@ -9,15 +9,11 @@ import alexyzer.hexcc.casting.TurtleCastEnv;
 import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.util.Misc;
 import alexyzer.hexcc.util.StaffSaveComponent;
-import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingImage;
 import at.petrak.hexcasting.api.casting.eval.vm.CastingVM;
-import at.petrak.hexcasting.api.casting.iota.Iota;
-import at.petrak.hexcasting.api.casting.iota.IotaType;
-import at.petrak.hexcasting.api.casting.iota.ListIota;
-import at.petrak.hexcasting.api.casting.iota.PatternIota;
+import at.petrak.hexcasting.api.casting.iota.*;
 import at.petrak.hexcasting.api.casting.math.HexDir;
 import at.petrak.hexcasting.api.casting.math.HexPattern;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
@@ -25,6 +21,8 @@ import at.petrak.hexcasting.api.casting.mishaps.MishapStackSize;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.TreeList;
 import at.petrak.hexcasting.common.lib.hex.HexActions;
+import at.petrak.hexcasting.common.lib.hex.HexImageComponents;
+import at.petrak.hexcasting.common.lib.hex.HexIotaTypes;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -32,8 +30,6 @@ import dan200.computercraft.api.pocket.IPocketAccess;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.TurtleSide;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -141,7 +137,7 @@ public class StaffPeripheral implements IPeripheral {
             //Reset cast() call limit
             cast$remaining.set(HexCCConfig.MAX_CASTS_PER_TICK);
 
-            image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getUserData());
+            image = image.copy(image.getStack(), image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), ops_consumed, image.getComponents());
             vm.setImage(image);
         }
     }
@@ -223,7 +219,7 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("getRavenmind")
     public final MethodResult lua$getRavenmind() throws LuaException {
         return waitChanges(() -> MethodResult.of(
-                vm.getImage().ravenmind().map(LuaIota::toLua).orElse(null)
+                LuaIota.toLua(getRavenmind())
         ));
     }
 
@@ -246,7 +242,7 @@ public class StaffPeripheral implements IPeripheral {
                     false, //cancel escape
                     false, //cancel simulate
                     image.getOpsConsumed(), //keep used ops
-                    new CompoundTag() //clear userdata
+                    Map.of() //clear userdata
             );
             vm.setImage(image);
 
@@ -306,14 +302,22 @@ public class StaffPeripheral implements IPeripheral {
     public void setStack(TreeList<Iota> newStack, ILuaContext lua) throws LuaException {
         var image = vm.getImage();
         if (IotaType.isTooLargeToSerialize(newStack)) doMishap(new MishapStackSize(), lua);
-        image = image.copy(newStack, image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), image.getOpsConsumed(), image.getUserData());
+        image = image.copy(newStack, image.getParenCount(), image.getParenthesized(), image.getEscapeNext(), image.getSimulateNext(), image.getOpsConsumed(), image.getComponents());
         vm.setImage(image);
     }
 
+    public Iota getRavenmind() {
+        var iota = vm.getImage().getComponent(HexImageComponents.RAVENMIND.get());
+        return iota != null ? iota : new NullIota();
+    }
+
     public void setRavenmind(Iota ravenmind) {
-        vm.getImage().getUserData()
-                .put(HexAPI.RAVENMIND_USERDATA,
-                        IotaType.TYPED_CODEC.encode(ravenmind, NbtOps.INSTANCE, new CompoundTag()).getOrThrow());
+        var image = vm.getImage();
+        vm.setImage(
+                ravenmind.getType() == HexIotaTypes.NULL.get() ?
+                    image.withoutComponent(HexImageComponents.RAVENMIND.get()) :
+                    image.withComponent(HexImageComponents.RAVENMIND.get(), ravenmind)
+        );
     }
 
     static Mishap.Context NULL_MISHAP_CTX = new Mishap.Context(null, null);

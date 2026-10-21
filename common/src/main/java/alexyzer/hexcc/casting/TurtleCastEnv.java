@@ -6,7 +6,6 @@ import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
-import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import net.minecraft.core.BlockPos;
@@ -41,6 +40,16 @@ public class TurtleCastEnv extends CastingEnvironment implements IComputerBasedC
     @Override
     public Misc.DumpableList<String> getRevealBuffer() {
         return revealBuffer;
+    }
+
+    @Override
+    public Vec3 getPos() {
+        return turtle.getPosition().getCenter();
+    }
+
+    @Override
+    public Vec3 getDir() {
+        return Vec3.atLowerCornerOf(turtle.getDirection().getNormal());
     }
 
     public @Nullable OperatorSideEffect.DoMishap getLastMishap() {

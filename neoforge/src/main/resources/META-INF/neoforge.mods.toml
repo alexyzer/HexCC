@@ -31,7 +31,7 @@ side = "BOTH"
 [[dependencies.hexcc]]
 modId = "hexcasting"
 type = "required"
-versionRange = "[0.12.0-devel-pre-26,)"
+versionRange = "[0.12.0-devel-pre-26,0.12.0-devel-pre-34]"
 ordering = "NONE"
 side = "BOTH"
 
@@ -45,7 +45,7 @@ side = "BOTH"
 [[dependencies.hexcc]]
 modId = "cloth_config"
 type = "required"
-versionRange = "[15.0.140,)"
+versionRange = "[15.0.130,)"
 ordering = "NONE"
 side = "BOTH"
 

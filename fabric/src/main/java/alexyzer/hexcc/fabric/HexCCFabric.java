@@ -4,6 +4,7 @@ import alexyzer.hexcc.HexCC;
 import alexyzer.hexcc.computer.StaffPocketUpgrade;
 import alexyzer.hexcc.computer.StaffTurtleUpgrade;
 import alexyzer.hexcc.computer.StaffUpgrade;
+import alexyzer.hexcc.util.StaffSaveComponent;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeType;
@@ -30,6 +31,12 @@ public final class HexCCFabric implements ModInitializer {
 
         // Run our common setup.
         HexCC.onCommonSetup();
+
+        Registry.register(
+                BuiltInRegistries.DATA_COMPONENT_TYPE,
+                StaffSaveComponent.RESOURCE_LOCATION,
+                StaffSaveComponent.INSTANCE
+        );
 
         @SuppressWarnings("unchecked")
         var TURTLE_UPGRADE_SERIALIZERS = (Registry<UpgradeType<? extends ITurtleUpgrade>>) BuiltInRegistries.REGISTRY.get(ITurtleUpgrade.typeRegistry().location());

@@ -4,8 +4,12 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "ClientLanguageMixin",
+    "LanguageMixin"
   ],
   "mixins": [
+    "CircleOpMixins$OpImpetusDirMixin",
+    "CircleOpMixins$OpImpetusPosMixin"
   ],
   "injectors": {
     "defaultRequire": 1

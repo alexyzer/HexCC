@@ -6,7 +6,6 @@ import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
-import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraft.core.BlockPos;
@@ -39,6 +38,17 @@ public class LivingPocketCastEnv extends CastingEnvironment implements IComputer
     @Override
     public Misc.DumpableList<String> getRevealBuffer() {
         return revealBuffer;
+    }
+
+    @Override
+    public Vec3 getPos() {
+        return pocket.getPosition();
+    }
+
+    @Override
+    public Vec3 getDir() {
+        var entity = pocket.getEntity();
+        return entity != null ? entity.getLookAngle() : new Vec3(0, 0, 1); //South
     }
 
     public @Nullable OperatorSideEffect.DoMishap getLastMishap() {

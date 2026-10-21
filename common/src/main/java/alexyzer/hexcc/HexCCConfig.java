@@ -8,4 +8,8 @@ public class HexCCConfig implements ConfigData {
     public static boolean ALLOW_UNKNOWN_IOTAS = false;
     public static boolean ALLOW_PLAYER_DESERIALIZATION = false;
     public static boolean ALLOW_INVALID_PATTERNS = false;
+    public static boolean PERSIST_STATE = true;
+    public static int REPLENISH_TICKS = 200;
+    public static int MAX_CASTS_PER_TICK = 10;
+    public static boolean STUMBLE_ON_MISHAP = false;
 }

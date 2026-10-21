@@ -29,14 +29,13 @@
     "hexcc.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.19.5",
-    "fabric": ">=0.116.17",
+    "fabricloader": "*",
+    "fabric": "*",
     "minecraft": "~1.21.1",
     "java": ">=21",
-    "fabric-api": "*",
-    "hexcasting": ">=0.12.0-devel-pre-26",
-    "computercraft": ">=1.113.0",
-    "cloth_config": ">=15.0.140"
+    "hexcasting": ">=0.12.0-devel-pre-26 <=0.12.0-devel-pre-34",
+    "computercraft": "*",
+    "cloth-config": "*"
   },
   "suggests": {
     "modmenu": "*"

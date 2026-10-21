@@ -5,12 +5,12 @@ import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.eval.CastResult;
 import at.petrak.hexcasting.api.casting.eval.env.PlayerBasedCastEnv;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
-import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import dan200.computercraft.api.pocket.IPocketAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerPocketCastEnv extends PlayerBasedCastEnv implements IComputerBasedCastEnv {
@@ -31,6 +31,17 @@ public class PlayerPocketCastEnv extends PlayerBasedCastEnv implements IComputer
     @Override
     public Misc.DumpableList<String> getRevealBuffer() {
         return revealBuffer;
+    }
+
+    @Override
+    public Vec3 getPos() {
+        return pocket.getPosition();
+    }
+
+    @Override
+    public Vec3 getDir() {
+        var entity = pocket.getEntity();
+        return entity != null ? entity.getLookAngle() : new Vec3(0, 0, 1); //South
     }
 
     public @Nullable OperatorSideEffect.DoMishap getLastMishap() {

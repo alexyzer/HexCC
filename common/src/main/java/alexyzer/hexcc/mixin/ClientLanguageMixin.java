@@ -53,8 +53,8 @@ public abstract class ClientLanguageMixin {
     @SuppressWarnings("LocalMayUseName") //No it can't
     private static boolean wrapIterator(
             Iterator<String> instance, Operation<Boolean> original,
-            @Local(name = "list") List<String> languages,
             //Using ordinal to combat differing mappings on different architectures
+            @Local(ordinal = 0) List<String> languages,
             @Local(ordinal = 0) Map<String, String> translations,
             @Local(ordinal = 0) String language
     ) {

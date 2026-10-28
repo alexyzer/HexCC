@@ -9,6 +9,7 @@ import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import dan200.computercraft.api.lua.LuaTable;
+import net.minecraft.locale.Language;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Misc {
 
@@ -167,4 +169,8 @@ public class Misc {
     }
 
     public static TriFunction<CastingEnvironment, Mishap, Mishap.Context, @Nullable String> getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
+
+    public static final Supplier<Language> DEFAULT_GET_ENGLISH_LANGUAGE_FUNC = Language::getInstance;
+
+    public static Supplier<Language> getEnglishLanguage = DEFAULT_GET_ENGLISH_LANGUAGE_FUNC;
 }

@@ -68,8 +68,10 @@ public abstract class ClientLanguageMixin {
                     LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
                 }
                 Misc.getEnglishMishapMessage = LanguageWorkaround::getEnglishMishapMessage;
+                Misc.getEnglishLanguage = () -> LanguageWorkaround.ENGLISH_MISHAPS;
             } else {
                 Misc.getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
+                Misc.getEnglishLanguage = Misc.DEFAULT_GET_ENGLISH_LANGUAGE_FUNC;
             }
         }
         return hasNext;

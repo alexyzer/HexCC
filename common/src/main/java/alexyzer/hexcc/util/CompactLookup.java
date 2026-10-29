@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -19,7 +18,7 @@ import java.util.function.Function;
  * Also, having continuous reference arrays used rarely gives more chances for the data to end up in swap.<p>
  * Heap object overhead for stored still exists though, accounting for 32*n bytes or 40Kb average.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"})
 public class CompactLookup<K, V> implements Function<K, V> {
 
     protected final Object[] keys;
@@ -33,22 +32,21 @@ public class CompactLookup<K, V> implements Function<K, V> {
     }
 
     public CompactLookup(java.util.Map<K, V> source) {
-        var size = source.size();
-        this.keys = new Object[size];
-        this.values = new Object[size];
 
-        var entries = source.entrySet().toArray();
-        Arrays.sort(entries, (a, b) -> {
-            var keyA = (Comparable) ((Entry) a).getKey();
-            var keyB = (Comparable) ((Entry) b).getKey();
-            return keyA.compareTo(keyB);
-        });
+        //This constructor is optimized for large HashMaps with >~10k entries
 
-        for (int i = 0; i < entries.length; i++) {
-            var entry = (Entry) entries[i];
-            keys[i]   = entry.getKey();
-            values[i] = entry.getValue();
-        }
+        this.keys = new Object[source.size()];
+        int[] i = {0};
+        //Copy the values with a method that is probably implemented efficiently
+        source.forEach((k, ignored) -> keys[i[0]++] = k);
+
+        //Only sort keys themselves to reduce pointer chasing in context of O(N^(>1)) time of sort()
+        Arrays.sort(keys);
+
+        this.values = new Object[i[0]];
+        for (int j = 0; j < keys.length; j++)
+            //Assuming source is fresh HashMap, this is superior for locality, but with slightly bigger O(N) cost
+            values[j] = source.get((K) keys[j]);
     }
 
     public void clearCache() {

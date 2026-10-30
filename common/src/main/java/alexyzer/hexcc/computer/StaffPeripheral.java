@@ -6,8 +6,8 @@ import alexyzer.hexcc.casting.IComputerBasedCastEnv;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
+import alexyzer.hexcc.util.LanguageWorkaround;
 import alexyzer.hexcc.util.LuaIota;
-import alexyzer.hexcc.util.Misc;
 import alexyzer.hexcc.util.StaffSaveComponent;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
@@ -276,8 +276,12 @@ public class StaffPeripheral implements IPeripheral {
             if (mishap != null) {
                 cast$exhaust();
                 try {
-                    throw new LuaException(
-                        Misc.getEnglishMishapMessage.apply(env, mishap.getMishap(), mishap.getErrorCtx()));
+                    var msgComponent = mishap.getMishap().errorMessageWithName(env, mishap.getErrorCtx());
+                    if (msgComponent != null) {
+                        var msgString = LanguageWorkaround.getEnglishComponentString.apply(msgComponent);
+                        throw new LuaException(msgString);
+                    } else
+                        throw new LuaException(null);
                 } finally {
                     attachment.clearMishap();
                     attachment.getRevealBuffer().clear();
@@ -332,10 +336,13 @@ public class StaffPeripheral implements IPeripheral {
         }, lua);
 
         //Throw error meanwhile
-        throw new LuaException(
+        var msgComponent = mishap.errorMessageWithName(env, NULL_MISHAP_CTX);
+        if (msgComponent != null) {
             //Getting a message is expected to be thread safe
-            Misc.getEnglishMishapMessage.apply(env, mishap, NULL_MISHAP_CTX)
-        );
+            var msgString = LanguageWorkaround.getEnglishComponentString.apply(msgComponent);
+            throw new LuaException(msgString);
+        } else
+            throw new LuaException(null);
     }
 
 

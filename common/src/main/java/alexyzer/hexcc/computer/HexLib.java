@@ -3,6 +3,7 @@ package alexyzer.hexcc.computer;
 import alexyzer.hexcc.HexCC;
 import alexyzer.hexcc.mixin.PatternRegistryManifestAccessor;
 import alexyzer.hexcc.util.CompactLookup;
+import alexyzer.hexcc.util.LanguageWorkaround;
 import alexyzer.hexcc.util.LuaOps;
 import alexyzer.hexcc.util.Misc;
 import at.petrak.hexcasting.api.HexAPI;
@@ -44,7 +45,7 @@ public class HexLib implements ILuaAPI {
     }
 
     public static void generatePatternLookup() {
-        final var ENGLISH = Misc.getEnglishLanguage.get();
+        final var ENGLISH = LanguageWorkaround.getEnglishLanguage.get();
         final var ACTION_REGISTRY = IXplatAbstractions.INSTANCE.getActionRegistry();
         final var NORMAL_ACTION_LOOKUP = PatternRegistryManifestAccessor.getNormalLookup();
 
@@ -88,7 +89,7 @@ public class HexLib implements ILuaAPI {
     @LuaFunction("getActionName")
     public final String lua$getActionName(Object signature) {
         return
-                Misc.getEnglishLanguage.get().getOrDefault(
+                LanguageWorkaround.getEnglishLanguage.get().getOrDefault(
                 HexAPI.instance().getActionI18nKey(
                 PatternRegistryManifestAccessor.getNormalLookup().get(
                 extractSignature(signature)

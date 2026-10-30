@@ -1,12 +1,13 @@
 package alexyzer.hexcc.mixin;
 
-import alexyzer.hexcc.client.LanguageWorkaround;
 import alexyzer.hexcc.util.CompactLookup;
-import alexyzer.hexcc.util.Misc;
+import alexyzer.hexcc.util.LanguageWorkaround;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.resources.language.ClientLanguage;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -63,15 +64,15 @@ public abstract class ClientLanguageMixin {
         if (!hasNext && language.equals("en_us")) {
             //If the client language is not just English, use the workaround
             if (languages.size() != 1) {
-                if (LanguageWorkaround.ENGLISH_MISHAPS == null) {
+                if (LanguageWorkaround.CLIENT_ENGLISH == null) {
                     var snapshot = new CompactLookup.Map<>(translations);
-                    LanguageWorkaround.ENGLISH_MISHAPS = new ClientLanguage(snapshot, false);
+                    LanguageWorkaround.CLIENT_ENGLISH = new ClientLanguage(snapshot, false);
                 }
-                Misc.getEnglishMishapMessage = LanguageWorkaround::getEnglishMishapMessage;
-                Misc.getEnglishLanguage = () -> LanguageWorkaround.ENGLISH_MISHAPS;
+                LanguageWorkaround.getEnglishLanguage = () -> LanguageWorkaround.CLIENT_ENGLISH;
+                LanguageWorkaround.getEnglishComponentString = LanguageWorkaround::getClientEnglishComponentString;
             } else {
-                Misc.getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
-                Misc.getEnglishLanguage = Misc.DEFAULT_GET_ENGLISH_LANGUAGE_FUNC;
+                LanguageWorkaround.getEnglishLanguage = Language::getInstance;
+                LanguageWorkaround.getEnglishComponentString = Component::getString;
             }
         }
         return hasNext;

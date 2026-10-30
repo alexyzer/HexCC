@@ -1,6 +1,5 @@
 package alexyzer.hexcc.util;
 
-import alexyzer.hexcc.client.LanguageWorkaround;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +12,7 @@ import java.util.function.Function;
 /**
  * Provides K->V mapping optimized for a small subset of used keys out of many.<p>
  * Since there are so many language keys, ~7k vanilla, to let's say ~11k modded, it would really waste (4+4)*n bytes more using a Object2ObjectOpenHashMap on its own;<p>
- * Is saving 10Kb necessary? For an addon, I think yes, especially for a utility method such as {@linkplain LanguageWorkaround#getEnglishMishapMessage}.<p>
+ * Is saving 10Kb necessary? For an addon, I think yes, especially for a utility method such as {@linkplain LanguageWorkaround#getClientEnglishComponentString}.<p>
  * Any extra memory taken makes garbage cleaner cycles more frequent. That stacks a ton with mods.<p>
  * Also, having continuous reference arrays used rarely gives more chances for the data to end up in swap.<p>
  * Heap object overhead for stored still exists though, accounting for 32*n bytes or 40Kb average.

@@ -1,6 +1,6 @@
 package alexyzer.hexcc.mixin;
 
-import alexyzer.hexcc.client.LanguageWorkaround;
+import alexyzer.hexcc.util.LanguageWorkaround;
 import net.minecraft.locale.Language;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,8 +12,8 @@ public class LanguageMixin {
 
     @Inject(method = "getInstance", at = @At("HEAD"), cancellable = true)
     private static void getInstance(CallbackInfoReturnable<Language> cir) {
-        if (LanguageWorkaround.useEnglish.get()) {
-            cir.setReturnValue(LanguageWorkaround.ENGLISH_MISHAPS);
+        if (LanguageWorkaround.useClientEnglish.get()) {
+            cir.setReturnValue(LanguageWorkaround.CLIENT_ENGLISH);
             cir.cancel();
         }
     }

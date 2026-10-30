@@ -2,14 +2,12 @@ package alexyzer.hexcc.util;
 
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.addldata.ADMediaHolder;
-import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.env.PlayerBasedCastEnv;
 import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
 import dan200.computercraft.api.lua.LuaTable;
-import net.minecraft.locale.Language;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +15,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public class Misc {
@@ -164,17 +160,6 @@ public class Misc {
 
         }
     }
-
-    public static @Nullable String DEFAULT_GET_ENGLISH_MISHAP_FUNC(CastingEnvironment env, Mishap mishap, Mishap.Context ctx) {
-        var msg = mishap.errorMessageWithName(env, ctx);
-        return msg != null ? msg.getString() : null;
-    }
-
-    public static TriFunction<CastingEnvironment, Mishap, Mishap.Context, @Nullable String> getEnglishMishapMessage = Misc::DEFAULT_GET_ENGLISH_MISHAP_FUNC;
-
-    public static final Supplier<Language> DEFAULT_GET_ENGLISH_LANGUAGE_FUNC = Language::getInstance;
-
-    public static Supplier<Language> getEnglishLanguage = DEFAULT_GET_ENGLISH_LANGUAGE_FUNC;
 
     static final Pattern UNICODE_MARK = Pattern.compile("\\p{M}");
     static final Pattern ALPHA_AND_SPACE = Pattern.compile("[^a-zA-Z0-9 ]");

@@ -9,7 +9,8 @@
   ],
   "mixins": [
     "CircleOpMixins$OpImpetusDirMixin",
-    "CircleOpMixins$OpImpetusPosMixin"
+    "CircleOpMixins$OpImpetusPosMixin",
+    "PatternRegistryManifestAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

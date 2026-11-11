@@ -28,6 +28,7 @@
   "mixins": [
     "hexcc.mixins.json"
   ],
+  "accessWidener" : "hexcc.accesswidener",
   "depends": {
     "fabricloader": "*",
     "fabric": "*",

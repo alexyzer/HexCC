@@ -35,7 +35,7 @@ dependencies {
     modRuntimeOnly("cc.tweaked:cc-tweaked-$rootProject.minecraft_version-fabric:$rootProject.cc_tweaked_version")
 
     //HexCasting fabric
-    modImplementation(files("libs/hexcasting-fabric-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
+    modImplementation(rootProject.files("libs/hexcasting-fabric-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
 
     //Cloth Config fabric
     modImplementation("me.shedaniel.cloth:cloth-config-fabric:$rootProject.cloth_config_version") {

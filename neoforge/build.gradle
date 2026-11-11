@@ -54,7 +54,7 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-neoforge:$rootProject.cloth_config_version")
 
     //HexCasting neoforge
-    implementation(files("libs/hexcasting-neoforge-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
+    implementation(rootProject.files("libs/hexcasting-neoforge-$rootProject.minecraft_version-${rootProject.hexcasting_version}.jar"))
 
     //HexCasting dependencies
     modRuntimeOnly("at.petra-k:paucal:$rootProject.paucal_version+$rootProject.minecraft_version-neoforge")

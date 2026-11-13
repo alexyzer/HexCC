@@ -47,7 +47,7 @@ dependencies {
 
     //HexCasting dependencies
     modRuntimeOnly("at.petra-k:paucal:$rootProject.paucal_version+$rootProject.minecraft_version-fabric")
-    modRuntimeOnly("vazkii.patchouli:Patchouli:1.21-$rootProject.patchouli_version-FABRIC-SNAPSHOT")
+    modRuntimeOnly("vazkii.patchouli:Patchouli:1.21.1-$rootProject.patchouli_version-FABRIC-SNAPSHOT")
     modRuntimeOnly("com.samsthenerd.inline:inline-fabric:$rootProject.minecraft_version-$rootProject.inline_version")
     modRuntimeOnly("org.ladysnake.cardinal-components-api:cardinal-components-base:$rootProject.fabric_cardinal_components_version")
     modRuntimeOnly("org.ladysnake.cardinal-components-api:cardinal-components-entity:$rootProject.fabric_cardinal_components_version")

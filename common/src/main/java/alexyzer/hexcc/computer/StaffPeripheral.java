@@ -6,6 +6,8 @@ import alexyzer.hexcc.casting.IComputerBasedCastEnv;
 import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
+import alexyzer.hexcc.util.IotaPermit;
+import alexyzer.hexcc.util.IotaRepresentable;
 import alexyzer.hexcc.util.LanguageWorkaround;
 import alexyzer.hexcc.util.StaffSaveComponent;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
@@ -46,8 +48,6 @@ import java.util.function.Supplier;
 import static alexyzer.hexcc.HexCCConfig.PERSIST_STATE;
 import static alexyzer.hexcc.HexCCConfig.REPLENISH_TICKS;
 import static alexyzer.hexcc.computer.StaffUpgrade.TYPE_STR;
-import static alexyzer.hexcc.util.IotaRepresentable.getIotaRepresentation;
-import static alexyzer.hexcc.util.IotaRepresentable.getLuaRepresentation;
 
 public class StaffPeripheral implements IPeripheral {
 
@@ -155,7 +155,7 @@ public class StaffPeripheral implements IPeripheral {
                 if (args.getType(0).equals("string"))
                     yield new PatternIota(HexPattern.fromAngleString(args.getString(0), HexDir.NORTH_EAST));
                 else
-                    yield getIotaRepresentation(args.get(0));
+                    yield deserializeIota(args.get(0));
             }
             case 2 -> new PatternIota(HexPattern.fromAngleString(
                     args.getString(0),
@@ -171,7 +171,7 @@ public class StaffPeripheral implements IPeripheral {
         doMainThreadTask(() -> {
             var newStack = new TreeList.TreeListBuilder<Iota>().addAll(getStack());
             for (Object arg : allArgs)
-                newStack.addOne(getIotaRepresentation(arg));
+                newStack.addOne(deserializeIota(arg));
 
             setStack(newStack.result(), lua);
             return null;
@@ -187,7 +187,7 @@ public class StaffPeripheral implements IPeripheral {
             setStack(oldStack.tail(), lua);
 
             return MethodResult.of(
-                    getLuaRepresentation(oldStack.last())
+                    serializeIota(oldStack.last())
             );
         });
     }
@@ -197,7 +197,7 @@ public class StaffPeripheral implements IPeripheral {
         return waitChanges(() -> {
             var stackSeq = new ArrayList<>();
             getStack().foreach(iota ->
-                    stackSeq.add(getLuaRepresentation(iota)));
+                    stackSeq.add(serializeIota(iota)));
 
             return MethodResult.of(stackSeq);
         });
@@ -212,7 +212,7 @@ public class StaffPeripheral implements IPeripheral {
             while (true) {
                 var luaIota = luaIotasSeq.get(i++);
                 if (luaIota == null) break;
-                stack.addOne(getIotaRepresentation(luaIota));
+                stack.addOne(deserializeIota(luaIota));
             }
 
             setStack(stack.result(), lua);
@@ -223,14 +223,14 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("getRavenmind")
     public final MethodResult lua$getRavenmind() throws LuaException {
         return waitChanges(() -> MethodResult.of(
-                getLuaRepresentation(getRavenmind())
+                serializeIota(getRavenmind())
         ));
     }
 
     @LuaFunction("setRavenmind")
     public final void lua$setRavenmind(Object iota, ILuaContext lua) throws LuaException {
         doMainThreadTask(() -> {
-            setRavenmind(getIotaRepresentation(iota));
+            setRavenmind(deserializeIota(iota));
             return null;
         }, lua);
     }
@@ -396,5 +396,14 @@ public class StaffPeripheral implements IPeripheral {
             });
             needsWait.set(true);
         }
+    }
+
+    public Object serializeIota(Iota iota) {
+        return IotaRepresentable.getLuaRepresentation(iota);
+    }
+
+    public Iota deserializeIota(Object iotaRepresentable) {
+        var iota = IotaRepresentable.getIotaRepresentation(iotaRepresentable, true);
+        return IotaPermit.validateIota(iota, env.getWorld());
     }
 }

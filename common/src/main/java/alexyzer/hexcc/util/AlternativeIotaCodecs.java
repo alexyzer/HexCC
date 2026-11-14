@@ -1,6 +1,7 @@
 package alexyzer.hexcc.util;
 
 import alexyzer.hexcc.HexCCConfig;
+import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.iota.EntityIota;
 import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.IotaType;
@@ -13,7 +14,7 @@ import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -21,10 +22,10 @@ import java.util.stream.Stream;
 
 public class AlternativeIotaCodecs {
 
-    public static final Object2ObjectOpenHashMap<IotaType<?>, MapCodec<? extends Iota>> ALTERNATIVE_CODECS = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectOpenHashMap<ResourceLocation, MapCodec<? extends Iota>> ALTERNATIVE_CODECS = new Object2ObjectOpenHashMap<>();
 
-    public static <I extends Iota> MapCodec<I> register(IotaType<I> type, MapCodec<I> codec) {
-        ALTERNATIVE_CODECS.put(type, codec);
+    public static <I extends Iota> MapCodec<I> register(ResourceLocation iotaResLoc, MapCodec<I> codec) {
+        ALTERNATIVE_CODECS.put(iotaResLoc, codec);
         return codec;
     }
 
@@ -33,40 +34,36 @@ public class AlternativeIotaCodecs {
         var prefix = ops.mapBuilder();
 
         var iotaType = (IotaType<I>) input.getType();
-        var iotaCodec = (MapCodec<I>) ALTERNATIVE_CODECS.get(iotaType);
+        var iotaResLoc = IXplatAbstractions.INSTANCE.getIotaTypeRegistry().getKey(iotaType);
+        if (iotaResLoc == null) return DataResult.error(() -> "Unknown Iota type key:" + iotaType);
+
+        var iotaCodec = (MapCodec<I>) ALTERNATIVE_CODECS.get(iotaResLoc);
         if (iotaCodec == null) iotaCodec = iotaType.codec();
 
-        SHORTENED_IOTA_TYPE_CODEC
+        Codec.STRING
                 .fieldOf("type")
-                .encode(iotaType, ops, prefix);
+                .encode(Misc.writeResLocWithHexDefault(iotaResLoc), ops, prefix);
         iotaCodec
                 .encode(input, ops, prefix);
 
         return prefix.build(ops.empty());
     }
 
-    public static <T> DataResult<? extends Iota> decode(DynamicOps<T> ops, MapLike<T> input) {
-        return SHORTENED_IOTA_TYPE_CODEC
-                .fieldOf("type").decode(ops, input)
-                .flatMap(iotaType -> {
-                    MapCodec<? extends Iota> codec = ALTERNATIVE_CODECS.get(iotaType);
-                    if (codec == null) codec = iotaType.codec();
-
-                    return codec.decode(ops, input);
-                });
+    public static <T> DataResult<? extends Iota> decode(ResourceLocation iotaResLoc, DynamicOps<T> ops, T input) {
+        return ops.getMap(input).flatMap(mapLike ->
+                (switch (ALTERNATIVE_CODECS.get(iotaResLoc)) {
+                    case MapCodec<? extends Iota> alternative -> DataResult.success(alternative);
+                    case null -> {
+                        var iotaType = IXplatAbstractions.INSTANCE.getIotaTypeRegistry().get(iotaResLoc);
+                        yield iotaType != null ? DataResult.success(iotaType.codec()) :
+                                DataResult.<MapCodec<? extends Iota>>error(() -> "Unknown Iota type:" + iotaResLoc);
+                    }
+                }).flatMap(codec -> codec.decode(ops, mapLike))
+        );
     }
 
-    @SuppressWarnings("DataFlowIssue")
-    public static final Codec<IotaType<?>> SHORTENED_IOTA_TYPE_CODEC = Codec.STRING.comapFlatMap(
-            string -> {
-                var iotaType = IXplatAbstractions.INSTANCE.getIotaTypeRegistry().get(Misc.parseWithHexDefault(string));
-                return iotaType != null ? DataResult.success(iotaType) : DataResult.error(() -> "Unknown Iota type:" + string);
-            },
-            iotaType -> Misc.writeResLocWithHexDefault(IXplatAbstractions.INSTANCE.getIotaTypeRegistry().getKey(iotaType))
-    );
-
     public static final MapCodec<PatternIota> PATTERN_IOTA_CODEC = register(
-            PatternIota.TYPE,
+            HexAPI.modLoc("pattern"),
             new MapCodec<>() {
                 @Override
                 public <T> RecordBuilder<T> encode(PatternIota input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
@@ -119,7 +116,7 @@ public class AlternativeIotaCodecs {
     );
 
     public static final MapCodec<EntityIota> ENTITY_IOTA_CODEC = register(
-            EntityIota.TYPE,
+            HexAPI.modLoc("entity"),
             RecordCodecBuilder.mapCodec(
                     inst -> inst.group(
                             UUIDUtil.STRING_CODEC.fieldOf("entityId").forGetter(EntityIota::getEntityId),
@@ -133,6 +130,6 @@ public class AlternativeIotaCodecs {
                                     LanguageWorkaround.useClientEnglish.set(false);
                                 }
                             })
-                    ).apply(inst, (entityId, entityName) -> new EntityIota(entityId, entityName.map(Component::literal).orElse(null)))
+                    ).apply(inst, (entityId, entityName) -> new EntityIota(entityId, null))
             ));
 }

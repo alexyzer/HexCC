@@ -7,6 +7,7 @@ import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -115,7 +116,7 @@ public class Misc {
     }
 
     /** {@link ResourceLocation#parse(String)} adapted to use {@link HexAPI#MOD_ID} as default namespace. **/
-    public static ResourceLocation parseWithHexDefault(String string) {
+    public static ResourceLocation parseWithHexDefault(String string) throws ResourceLocationException {
         int i = string.indexOf(':');
         if (i >= 0) {
             String path = string.substring(i + 1);

@@ -7,7 +7,6 @@ import at.petrak.hexcasting.api.casting.eval.vm.FrameEvaluate;
 import at.petrak.hexcasting.api.casting.eval.vm.FrameForEach;
 import at.petrak.hexcasting.api.casting.eval.vm.SpellContinuation;
 import at.petrak.hexcasting.api.casting.iota.*;
-import at.petrak.hexcasting.api.casting.math.HexAngle;
 import at.petrak.hexcasting.api.utils.TreeList;
 import at.petrak.hexcasting.common.lib.hex.HexIotaTypes;
 import com.google.gson.JsonParser;
@@ -25,7 +24,6 @@ import java.util.function.BiFunction;
 
 import static alexyzer.hexcc.HexCCAPI.registerIotaDeserializationValidator;
 
-@Deprecated
 public class IotaPermit {
 
     public static final ResourceLocation PERMIT_LOCATION = ResourceLocation.fromNamespaceAndPath(HexCC.MOD_ID, "allow_iota_deserialization.json");
@@ -90,7 +88,6 @@ public class IotaPermit {
         public static void register() {
             registerIotaDeserializationValidator(HexIotaTypes.ENTITY.get(), BuiltInValidators::validateEntity);
             registerIotaDeserializationValidator(HexIotaTypes.LIST.get(), BuiltInValidators::validateList);
-            registerIotaDeserializationValidator(HexIotaTypes.PATTERN.get(), BuiltInValidators::validatePattern);
             registerIotaDeserializationValidator(HexIotaTypes.CONTINUATION.get(), BuiltInValidators::validateContinuation);
         }
 
@@ -105,15 +102,6 @@ public class IotaPermit {
 
         public static Iota validateList(Iota listIota, ServerLevel level) {
             return new ListIota(validateIotas(((ListIota) listIota).getList(), level));
-        }
-
-        public static Iota validatePattern(Iota patternIota, ServerLevel level) {
-            if (HexCCConfig.ALLOW_INVALID_PATTERNS) return patternIota;
-
-            for (HexAngle angle : ((PatternIota) patternIota).getPattern().getSignature())
-                if (angle == HexAngle.BACK) return new GarbageIota();
-
-            return patternIota;
         }
 
         public static Iota validateContinuation(Iota continuationIota, ServerLevel level) {

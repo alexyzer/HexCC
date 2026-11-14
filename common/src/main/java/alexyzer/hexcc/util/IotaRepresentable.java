@@ -1,10 +1,11 @@
 package alexyzer.hexcc.util;
 
+import alexyzer.hexcc.HexCCConfig;
 import at.petrak.hexcasting.api.casting.iota.*;
 import at.petrak.hexcasting.api.utils.TreeList;
 import at.petrak.hexcasting.common.lib.hex.HexIotaTypes;
 import at.petrak.hexcasting.xplat.IXplatAbstractions;
-import com.mojang.serialization.MapLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,18 +48,19 @@ public class IotaRepresentable {
         }
     }
 
-    public static Iota getIotaRepresentation(Object iotaRepresentable) {
+    public static Iota getIotaRepresentation(Object iotaRepresentable, boolean moderate) {
         try {
             return switch (iotaRepresentable) {
                 case Iota iota -> iota;
                 case Map<?, ?> table -> {
                     //LuaIota
-                    if (table.get("type") instanceof String) {
-                        @SuppressWarnings("unchecked")
-                        var iotaResult = AlternativeIotaCodecs.decode(LuaOps.INSTANCE, MapLike.forMap((Map<Object, Object>) table, LuaOps.INSTANCE));
-                        yield iotaResult.isSuccess() ?
-                                iotaResult.getOrThrow() :
-                                new GarbageIota();
+                    if (table.get("type") instanceof String typeString) {
+                        ResourceLocation typeResLoc = Misc.parseWithHexDefault(typeString);
+                        var allowed = !moderate || IotaPermit.typePermits.getOrDefault(typeResLoc, HexCCConfig.ALLOW_UNKNOWN_IOTAS);
+                        if (!allowed) yield new GarbageIota();
+
+                        var iotaResult = AlternativeIotaCodecs.decode(typeResLoc, LuaOps.INSTANCE, table);
+                        yield iotaResult.isSuccess() ? iotaResult.getOrThrow() : new GarbageIota();
                     }
 
                     //List
@@ -66,7 +68,7 @@ public class IotaRepresentable {
                     if (seq >= 0) {
                         var listBuilder = new TreeList.TreeListBuilder<Iota>();
                         table.forEach((k, v) -> {
-                            var iota = getIotaRepresentation(v);
+                            var iota = getIotaRepresentation(v, moderate);
                             listBuilder.addOne(iota != null ? iota : new GarbageIota());
                         });
                         yield new ListIota(listBuilder.result());

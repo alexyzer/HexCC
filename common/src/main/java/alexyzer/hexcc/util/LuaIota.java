@@ -6,8 +6,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Deprecated
 public class LuaIota {
 
     public static Map<String, Object> toLua(Iota iota) {
@@ -25,7 +29,7 @@ public class LuaIota {
             case Number num -> new DoubleIota(num.doubleValue());
             case Boolean bool -> new BooleanIota(bool);
             case Map<?, ?> table -> {
-                var seq = Misc.getSequence(table);
+                var seq = LuaOps.getSequence(table);
 
                 if (seq == -1) {
                     if (

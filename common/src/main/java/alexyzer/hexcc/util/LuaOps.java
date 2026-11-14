@@ -3,6 +3,7 @@ package alexyzer.hexcc.util;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import dan200.computercraft.api.lua.LuaTable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 
 import java.util.List;
@@ -11,6 +12,17 @@ import java.util.stream.Stream;
 
 public class LuaOps implements DynamicOps<Object> {
     public static final LuaOps INSTANCE = new LuaOps();
+
+    /** @return sequence {@code table.size()} or {@code -1} if not sequence. **/
+    public static int getSequence(Map<?, ?> table) {
+        if (table instanceof LuaTable<?,?> luaTable) {
+            return luaTable.size() == luaTable.length() ? luaTable.size() : -1;
+        } else {
+            var sequence = 0;
+            while (table.containsKey((double) (sequence + 1))) sequence++;
+            return table.size() == sequence ? sequence : -1;
+        }
+    }
 
     @Override
     public Object empty() {

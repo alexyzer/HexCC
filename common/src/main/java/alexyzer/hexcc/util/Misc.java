@@ -7,7 +7,6 @@ import at.petrak.hexcasting.api.casting.mishaps.Mishap;
 import at.petrak.hexcasting.api.mod.HexConfig;
 import at.petrak.hexcasting.api.utils.MediaHelper;
 import at.petrak.hexcasting.common.lib.HexDamageTypes;
-import dan200.computercraft.api.lua.LuaTable;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +21,6 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Misc {
@@ -116,17 +114,6 @@ public class Misc {
         return Arrays.asList(stackArr);
     }
 
-    /** @return sequence {@code table.size()} or {@code -1} if not sequence. **/
-    public static int getSequence(Map<?, ?> table) {
-        if (table instanceof LuaTable<?,?> luaTable) {
-            return luaTable.size() == luaTable.length() ? luaTable.size() : -1;
-        } else {
-            var sequence = 0;
-            while (table.containsKey((double) (sequence + 1))) sequence++;
-            return table.size() == sequence ? sequence : -1;
-        }
-    }
-
     /** {@link ResourceLocation#parse(String)} adapted to use {@link HexAPI#MOD_ID} as default namespace. **/
     public static ResourceLocation parseWithHexDefault(String string) {
         int i = string.indexOf(':');
@@ -141,6 +128,10 @@ public class Misc {
         } else {
             return ResourceLocation.fromNamespaceAndPath(HexAPI.MOD_ID, string);
         }
+    }
+
+    public static String writeResLocWithHexDefault(ResourceLocation resourceLocation) {
+        return resourceLocation.getNamespace().equals(HexAPI.MOD_ID) ? resourceLocation.getPath() : resourceLocation.toString();
     }
 
     public static class NoOpStreamCodec<B, V> implements StreamCodec<B, V> {

@@ -25,6 +25,7 @@ import java.util.function.BiFunction;
 
 import static alexyzer.hexcc.HexCCAPI.registerIotaDeserializationValidator;
 
+@Deprecated
 public class IotaPermit {
 
     public static final ResourceLocation PERMIT_LOCATION = ResourceLocation.fromNamespaceAndPath(HexCC.MOD_ID, "allow_iota_deserialization.json");

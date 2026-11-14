@@ -7,7 +7,6 @@ import alexyzer.hexcc.casting.LivingPocketCastEnv;
 import alexyzer.hexcc.casting.PlayerPocketCastEnv;
 import alexyzer.hexcc.casting.TurtleCastEnv;
 import alexyzer.hexcc.util.LanguageWorkaround;
-import alexyzer.hexcc.util.LuaIota;
 import alexyzer.hexcc.util.StaffSaveComponent;
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment;
 import at.petrak.hexcasting.api.casting.eval.sideeffects.OperatorSideEffect;
@@ -47,6 +46,8 @@ import java.util.function.Supplier;
 import static alexyzer.hexcc.HexCCConfig.PERSIST_STATE;
 import static alexyzer.hexcc.HexCCConfig.REPLENISH_TICKS;
 import static alexyzer.hexcc.computer.StaffUpgrade.TYPE_STR;
+import static alexyzer.hexcc.util.IotaRepresentable.getIotaRepresentation;
+import static alexyzer.hexcc.util.IotaRepresentable.getLuaRepresentation;
 
 public class StaffPeripheral implements IPeripheral {
 
@@ -154,7 +155,7 @@ public class StaffPeripheral implements IPeripheral {
                 if (args.getType(0).equals("string"))
                     yield new PatternIota(HexPattern.fromAngleString(args.getString(0), HexDir.NORTH_EAST));
                 else
-                    yield LuaIota.fromLua(args.get(0), env.getWorld());
+                    yield getIotaRepresentation(args.get(0));
             }
             case 2 -> new PatternIota(HexPattern.fromAngleString(
                     args.getString(0),
@@ -166,13 +167,13 @@ public class StaffPeripheral implements IPeripheral {
 
     @LuaFunction("pushStack")
     public final void lua$pushStack(IArguments args, ILuaContext lua) throws LuaException {
-        var iotas = args.getAll();
+        var allArgs = args.getAll();
         doMainThreadTask(() -> {
-            setStack(
-                getStack().appendedAll(
-                    LuaIota.parseArgs(env.getWorld(), iotas)
-            ), lua);
+            var newStack = new TreeList.TreeListBuilder<Iota>().addAll(getStack());
+            for (Object arg : allArgs)
+                newStack.addOne(getIotaRepresentation(arg));
 
+            setStack(newStack.result(), lua);
             return null;
         }, lua);
     }
@@ -186,7 +187,7 @@ public class StaffPeripheral implements IPeripheral {
             setStack(oldStack.tail(), lua);
 
             return MethodResult.of(
-                LuaIota.toLua(oldStack.last())
+                    getLuaRepresentation(oldStack.last())
             );
         });
     }
@@ -194,10 +195,11 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("getStack")
     public final MethodResult lua$getStack() throws LuaException {
         return waitChanges(() -> {
-            var stack = getStack();
-            var luaIotas = new ArrayList<Map<String, Object>>(stack.size());
-            stack.foreach(iota -> luaIotas.add(LuaIota.toLua(iota)));
-            return MethodResult.of(luaIotas);
+            var stackSeq = new ArrayList<>();
+            getStack().foreach(iota ->
+                    stackSeq.add(getLuaRepresentation(iota)));
+
+            return MethodResult.of(stackSeq);
         });
     }
 
@@ -205,13 +207,15 @@ public class StaffPeripheral implements IPeripheral {
     public final void lua$setStack(Map<?, ?> luaIotasSeq, ILuaContext lua) throws LuaException {
         doMainThreadTask(() -> {
             var stack = new TreeList.TreeListBuilder<Iota>();
-            for (double i = 1.0; i <= luaIotasSeq.size(); i++) {
-                var luaIota = luaIotasSeq.get(i);
-                if (luaIota == null) break;
-                stack.addOne(LuaIota.fromLua(luaIota, env.getWorld()));
-            }
-            setStack(stack.result(), lua);
 
+            double i = 1.0;
+            while (true) {
+                var luaIota = luaIotasSeq.get(i++);
+                if (luaIota == null) break;
+                stack.addOne(getIotaRepresentation(luaIota));
+            }
+
+            setStack(stack.result(), lua);
             return null;
         }, lua);
     }
@@ -219,14 +223,14 @@ public class StaffPeripheral implements IPeripheral {
     @LuaFunction("getRavenmind")
     public final MethodResult lua$getRavenmind() throws LuaException {
         return waitChanges(() -> MethodResult.of(
-                LuaIota.toLua(getRavenmind())
+                getLuaRepresentation(getRavenmind())
         ));
     }
 
     @LuaFunction("setRavenmind")
     public final void lua$setRavenmind(Object iota, ILuaContext lua) throws LuaException {
         doMainThreadTask(() -> {
-            setRavenmind(LuaIota.fromLua(iota, env.getWorld()));
+            setRavenmind(getIotaRepresentation(iota));
             return null;
         }, lua);
     }

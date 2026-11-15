@@ -53,4 +53,4 @@ side = "BOTH"
 config = "hexcc.mixins.json"
 
 [[accessTransformers]]
-file="accesstransformer.cfg"
+file="META-INF/accesstransformer.cfg"
